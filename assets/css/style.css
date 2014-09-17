@@ -1,0 +1,191 @@
+
+/************************
+****** Page Layout ******
+************************/
+
+@media screen and (min-width:1421px) {
+	#content { margin-left:260px; max-width:100%; margin-right:325px; padding:0px; }
+	#panel-right { width:300px; }
+}
+
+@media screen and (min-width:1121px) and (max-width:1420px) {
+	#content { margin-left:260px; max-width:100%; margin-right:10px; padding:0px; }
+}
+
+@media screen and (min-width:921px) and (max-width:1120px) {
+	#content { margin-left:260px; margin-right:10px; padding:0px; }
+}
+
+@media screen and (min-width:501px) and (max-width:920px) {
+	#content { margin-left:0px; margin-right:10px; padding:0px; }
+}
+
+@media screen and (max-width:500px) {
+	#content { margin-left:0px; padding:0px; }
+}
+
+#panel-nav { width:245px; }
+
+
+/******************
+****** Posts ******
+******************/
+.post { border:solid 1px #b0b0b0; background-color:white; margin-bottom:15px; }
+
+.post-header { overflow:hidden; max-width:100%; padding:18px; }
+.post-header>div:first-child { float:left; }
+.post-header>div:last-child { float:right; }
+
+.post-footer { margin:0 0 0px 15px; }
+.post-footer>div { overflow:hidden; max-width:100%; }
+.post-footer>div img { float:left; margin-left:0px; }
+.post-footer>div:nth-last-child(n+2) { padding-bottom:6px; }
+
+.post-footer>.extralinks { padding:10px 5px 0px 5px; margin-bottom:12px; }
+.post-footer>.extralinks>a { margin-right:22px; }
+
+.post-message { margin-left:80px; }
+
+.post-image-wrap { margin:0px; }
+.post-content-wrap { margin:0px 22px 0px 22px; }
+.post-content-left { float:left; width:45%; max-width: 280px; margin-right:20px; }
+
+/* Responsive Images */
+.post-image { width:100%; }
+.post-image-mini { max-width:100%; }
+
+/* Fluid Video Container, thanks to "AvexDesigns.com/responsive-youtube-embed/" */
+.video-embed-flex {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 30px; height: 0; overflow: hidden;
+}
+
+.video-embed-flex iframe,
+.video-embed-flex object,
+.video-embed-flex embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/************************
+****** Open Blocks ******
+************************/
+
+.open-block { width:100%; border:solid 1px #b0b0b0; background-color:white; padding:10px; }
+
+
+/*******************
+****** Inputs ******
+*******************/
+
+.comment-box-wrap { margin-left:84px; padding:0 30px 0 0; }
+.comment-box { width:100%; padding:10px; font-size:16px; font-family:Arial; color:#475055; resize:vertical; }
+.comment-box-input { display:none; height: 0px; width: 0px; border: none; padding: 0px; }
+
+/******************
+****** Icons ******
+******************/
+
+.post-icon { font-size:24px; vertical-align:middle; color:#ea6060; }
+.post-avi { float:left; margin:15px 10px 5px 10px !important; }
+
+
+/********************
+****** Top Bar ******
+********************/
+
+#top-bar { width:100%; position:relative; margin-bottom:10px; padding:0px; }
+#top-bar-img { width:100%; margin:0; }
+#top-avi-wrap { position:absolute;left:4%;top:10%;width:20%; }
+#top-propic { width:100%; height:auto; border:10px solid rgba(255, 255, 255, 0.5); border-radius:50%; }
+#top-name { position:absolute; left:8%; bottom:13%; font-size:1.5em; color:#fff; font-weight:bold; text-align:center; }
+#top-name>span { font-size:0.8em; }
+#top-desc { position:absolute; width: 45%; left:27%; bottom:14%; font-size:1.5em; color:#fff; font-weight:normal; text-align:center; }
+#top-connect { position:absolute; right:4%; bottom:13%; }
+
+#top-bar-fade {
+	position:absolute; top:0px; left:0px; width:100%; height:100%; margin:0px; padding:0px;
+	
+	background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.75) 0%, rgba(210, 210, 210, 0.75) 25%, rgba(125, 125, 125, 0.75) 50%, rgba(64, 64, 64, 0.75) 75%, rgba(0, 0, 0, 0.75) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255, 255, 255, 0.75)), color-stop(25%,rgba(210, 210, 210, 0.75)), color-stop(50%,rgba(125, 125, 125, 0.75)), color-stop(75%, rgba(64, 64, 64, 0.75)), color-stop(100%, rgba(255, 255, 255, 0.75))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.75) 0%, rgba(210, 210, 210, 0.75) 25%, rgba(125, 125, 125, 0.75) 50%, rgba(64, 64, 64, 0.75) 75%, rgba(0, 0, 0, 0.75) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(255, 255, 255, 0.75) 0%, rgba(210, 210, 210, 0.75) 25%, rgba(125, 125, 125, 0.75) 50%, rgba(64, 64, 64, 0.75) 75%, rgba(0, 0, 0, 0.75) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.75) 0%, rgba(210, 210, 210, 0.75) 25%, rgba(125, 125, 125, 0.75) 50%, rgba(64, 64, 64, 0.75) 75%, rgba(0, 0, 0, 0.75) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.75) 0%,rgba(210, 210, 210, 0.75) 25%, rgba(125, 125, 125, 0.75) 50%, rgba(64, 64, 64, 0.75) 75%, rgba(0, 0, 0, 0.75) 100%); /* W3C */
+}
+
+/*********************************
+****** Left Panel - Modules ******
+*********************************/
+
+.side-module
+{
+	width:100%;
+	border:solid 1px #b0b0b0;
+	box-shadow: 0 0 0 1px #dcdcdc;
+	margin-bottom:7px;
+	background-color:white;
+}
+
+.side-header
+{
+	width:100%;
+	padding:0px;
+	font-size:14px;
+	font-weight:bold;
+	color:#152840;
+	height:40px;
+	line-height:40px;
+	vertical-align:middle;
+}
+
+.side-header>a { color:#152840; }
+.side-header>a:visited { color:#152840; }
+
+.side-header span
+{
+	color:#57c2c1;
+	font-size:20px;
+	vertical-align:middle;
+	padding:0 12px 0 12px;
+}
+
+.side-footer
+{
+	border-top:solid 1px #b0b0b0;
+	line-height:22px;
+	height:22px;
+	padding-left:10px;
+	font-size:14px;
+	vertical-align:middle;
+}
+
+.side-photos { padding:4px 2px 0px 4px; }
+.side-photos img
+{
+	display:inline-block;
+	width:93px;
+	height:93px;
+	padding:0px 3px 1px 0px;
+}
+
+.side-photo-caption { padding:3px; }
+.side-photo-caption>div
+{
+	display:inline-block;
+	width:100%;
+	height:100px;
+	font-size:14px;
+}
+
+.side-photo-caption>div>img
+{
+	float:left;
+	margin-right:4px;
+	height:100px;
+	max-width:130px;
+}
