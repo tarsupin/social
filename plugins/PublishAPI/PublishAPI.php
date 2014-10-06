@@ -16,12 +16,10 @@ This API allows a user to automatically post content to his feed from another si
 		'uni_id'		=> $uniID		// The UniID of the page that you're posting to
 	,	'type'			=> $type		// The type of content being chatted (blog, article, etc)
 	,	'poster_id'		=> $posterID	// The person posting to the page (usually the same as UniID)
-	,	'message'		=> $message		// Set this value to the message or caption to write
-	,	'image_url'		=> $imageURL	// Set this value (absolute url) if you're posting an image
-	,	'mobile_url'	=> $mobileURL	// Set this to the mobile verson of the image, if applicable
+	,	'thumbnail'		=> $thumbnail	// The thumbnail URL if you're posting an image
 	,	'video_url'		=> $videoURL	// Set this value (absolute url) if you're posting a video
-	,	'attach_title'	=> $title		// If set, this is the title of the attachment
-	,	'attach_desc'	=> $desc		// If set, this is the description of the attachment
+	,	'title'			=> $title		// If set, this is the title of the attachment
+	,	'description'	=> $desc		// If set, this is the description of the attachment
 	,	'source'		=> $source		// The URL source to link to (if someone clicks on it)
 	);
 	
@@ -62,14 +60,12 @@ class PublishAPI extends API {
 		$uniID = (int) $this->data['uni_id'];
 		$posterID = (int) $this->data['poster_id'];
 		$source = (isset($this->data['source']) ? Sanitize::url($this->data['source']) : "");
-		$message = (isset($this->data['message']) ? Sanitize::text($this->data['message']) : "");
 		$origHandle = (isset($this->data['orig_handle']) ? Sanitize::variable($this->data['orig_handle']) : "");
 		
-		$attachTitle = (isset($this->data['attach_title']) ? Sanitize::safeword($this->data['attach_title'], " !?'") : "");
-		$attachDesc = (isset($this->data['attach_desc']) ? Sanitize::safeword($this->data['attach_desc'], " !?'\"") : "");
+		$title = (isset($this->data['title']) ? Sanitize::safeword($this->data['title'], " !?'\"") : "");
+		$description = (isset($this->data['description']) ? Sanitize::safeword($this->data['description'], " !?'\"") : "");
 		
-		$imageURL = (isset($this->data['image_url']) ? Sanitize::url($this->data['image_url']) : "");
-		$mobileURL = (isset($this->data['mobile_url']) ? Sanitize::url($this->data['mobile_url']) : "");
+		$thumbnail = (isset($this->data['thumbnail']) ? Sanitize::url($this->data['thumbnail']) : "");
 		$videoURL = (isset($this->data['video_url']) ? Sanitize::url($this->data['video_url']) : "");
 		
 		// Get the Current Type
@@ -77,28 +73,22 @@ class PublishAPI extends API {
 		
 		if($type == "")
 		{
-			if($imageURL) { $type = "image"; }
+			if($thumbnail) { $type = "image"; }
 			else if($videoURL) { $type = "video"; }
-			else if($message != "") { $type = "message"; }
+			else if($description != "") { $type = "comment"; }
 		}
 		
 		// If we're publishing an Image
 		if($type == "image")
 		{
 			// Create the attachment
-			$attachment = new Attachment(Attachment::TYPE_IMAGE, $imageURL);
+			$attachment = new Attachment(Attachment::TYPE_IMAGE, $thumbnail);
 			
 			// Update the attachment's important settings
 			$attachment->setSource($source);
 			
-			if($attachTitle) { $attachment->setTitle($attachTitle); }
-			if($attachDesc) { $attachment->setDescription($attachDesc); }
-			
-			if(isset($this->data['mobile_url']))
-			{
-				// Set the mobile attachment value
-				$attachment->setMobileImage($mobileURL);
-			}
+			if($title) { $attachment->setTitle($title); }
+			if($description) { $attachment->setDescription($description); }
 			
 			// Save the attachment into the database
 			$attachment->save();
@@ -107,7 +97,7 @@ class PublishAPI extends API {
 			$attachmentID = $attachment->id;
 			
 			// Create the post
-			if($postID = AppSocial::createPost($uniID, $posterID, $attachmentID, $message, $source, 0))
+			if($postID = AppSocial::createPost($uniID, $posterID, $attachmentID, $description, $source, 0))
 			{
 				return true;
 			}
@@ -128,8 +118,8 @@ class PublishAPI extends API {
 			// Update the attachment's important settings
 			$attachment->setSource($source);
 			
-			if($attachTitle) { $attachment->setTitle($attachTitle); }
-			if($attachDesc) { $attachment->setDescription($attachDesc); }
+			if($title) { $attachment->setTitle($title); }
+			if($description) { $attachment->setDescription($description); }
 			
 			// Add important data
 			$attachment->setEmbed($embed);
@@ -141,16 +131,16 @@ class PublishAPI extends API {
 			$attachmentID = $attachment->id;
 			
 			// Create the post
-			if($postID = AppSocial::createPost($uniID, $posterID, $attachmentID, $message, $source, 0))
+			if($postID = AppSocial::createPost($uniID, $posterID, $attachmentID, $description, $source, 0))
 			{
 				return true;
 			}
 		}
 		
 		// If we're publishing a message
-		else if($type == "message")
+		else if($type == "comment")
 		{
-			if(AppSocial::createPost($uniID, $posterID, 0, $message))
+			if(AppSocial::createPost($uniID, $posterID, 0, $description))
 			{
 				return true;
 			}
@@ -160,19 +150,13 @@ class PublishAPI extends API {
 		else if($type == "article")
 		{
 			// Create the attachment
-			$attachment = new Attachment(Attachment::TYPE_ARTICLE, $imageURL);
+			$attachment = new Attachment(Attachment::TYPE_ARTICLE, $thumbnail);
 			
 			// Update the attachment's important settings
 			$attachment->setSource($source);
 			
-			if($attachTitle) { $attachment->setTitle($attachTitle); }
-			if($attachDesc) { $attachment->setDescription($attachDesc); }
-			
-			if($mobileURL)
-			{
-				// Set the mobile attachment value
-				$attachment->setMobileImage($mobileURL);
-			}
+			if($title) { $attachment->setTitle($title); }
+			if($description) { $attachment->setDescription($description); }
 			
 			// Save the attachment into the database
 			$attachment->save();
@@ -181,7 +165,7 @@ class PublishAPI extends API {
 			$attachmentID = $attachment->id;
 			
 			// Create the post
-			if(AppSocial::createPost($uniID, $posterID, $attachmentID, $message, $source, 0))
+			if(AppSocial::createPost($uniID, $posterID, $attachmentID, $description, $source, 0))
 			{
 				return true;
 			}
