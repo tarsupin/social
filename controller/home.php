@@ -56,6 +56,7 @@ foreach($feedPosts as $post)
 {
 	// Get the user's display name if we don't have it already (reduces times caled)
 	$pID = $post['poster_id'];
+	$post['date_posted'] = (int) $post['date_posted'];
 	
 	if(!isset(User::$cache[$pID]))
 	{
@@ -105,6 +106,7 @@ foreach($feedPosts as $post)
 		foreach($comments as $comment)
 		{
 			$cpID = $comment['uni_id'];
+			$comment['date_posted'] = (int) $comment['date_posted'];
 			
 			if(!isset(User::$cache[$cpID]))
 			{

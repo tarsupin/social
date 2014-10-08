@@ -57,7 +57,7 @@ if(Form::submitted("social-post-adv"))
 					$origWidth = ($imageUpload->width < 900) ? $imageUpload->width : 900;
 					
 					// Save the original image
-					$image->autoWidth($origWidth, $origWidth / $imageUpload->scale);
+					$image->autoWidth($origWidth, (int) ($origWidth / $imageUpload->scale));
 					$image->save($imageDir . "/" . $imageUpload->filename . ".jpg");
 					
 					if($origWidth > 550)
@@ -65,14 +65,14 @@ if(Form::submitted("social-post-adv"))
 						// Save the tablet version of the image
 						/* // Actually, in our case, we don't seem to need the tablet version - skip to mobile.
 						$origWidth = $origWidth / 1.5;
-						$image->autoWidth($origWidth, $origWidth / $imageUpload->scale);
+						$image->autoWidth($origWidth, (int) ($origWidth / $imageUpload->scale));
 						$image->save($imageDir . "/" . $imageUpload->filename . "-tablet.jpg");
 						*/
 						
 						$origWidth = 360;
 						
 						// Save the mobile version of the image
-						$image->autoWidth($origWidth, $origWidth / $imageUpload->scale);
+						$image->autoWidth($origWidth, (int) ($origWidth / $imageUpload->scale));
 						$image->save($imageDir . "/" . $imageUpload->filename . "-mobile.jpg");
 						
 						$setMobile = true;
