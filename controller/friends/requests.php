@@ -12,6 +12,9 @@ if(isset($_GET['friend']))
 	// Get Friend Data
 	if($friend = User::getDataByHandle($_GET['friend'], "uni_id, handle, display_name"))
 	{
+		// Recognize Integer
+		$friend['uni_id'] = (int) $friend['uni_id'];
+		
 		// Get details about the friend request
 		$clearance = AppFriends::getRequest(Me::$id, $friend['uni_id']);
 		
