@@ -27,10 +27,10 @@ if(Me::$id == You::$id)
 }
 else
 {
-	list($viewClearance, $interactClearance) = Friends::getClearance(Me::$id, You::$id);
+	list($viewClearance, $interactClearance) = AppFriends::getClearance(Me::$id, You::$id);
 	
 	// Track engagement with this user (view rate)
-	// Friend::trackEngagement(Me::$id, You::$id, 1);
+	AppFriends::trackEngagement(Me::$id, You::$id, 1);
 }
 
 // Determine Permissions
