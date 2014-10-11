@@ -105,7 +105,7 @@ echo '
 // The Photo Display (Top Bar)
 if($socialPage['has_headerPhoto'] == 1)
 {
-	$urlPath = AppSocial::headerPhoto(You::$id);
+	$urlPath = AppSocial::headerPhoto(You::$id, You::$handle);
 	
 	$headPhoto = $urlPath['imageDir'] . '/' . $urlPath['mainDir'] . '/' . $urlPath['secondDir'] . '/' . $urlPath['filename'] . '.' . $urlPath['ext'];
 }
@@ -121,13 +121,12 @@ echo '
 	<div id="top-avi-wrap">
 		<img id="top-propic" src="' . ProfilePic::image(You::$id, $size = "large") . '" />
 	</div>
-	<div id="top-name">' . You::$name . '<br /><span>@' . You::$handle . '</span></div>
-	<div id="top-desc">' . $socialPage['description'] . '</span></div>';
+	<div id="top-name">@' . You::$handle . '</div>';
 	
 	if($viewClearance < 2)
 	{
 		echo '
-		<div id="top-connect"><a href="' . URL::auth_unifaction_com() . '/friends/send-request?friend=' . You::$handle . '" class="button"><span class="icon-user"></span> &nbsp; Add Friend</a></div>';
+		<div id="top-connect"><a href="/friends/send-request?friend=' . You::$handle . '" class="button"><span class="icon-user"></span> &nbsp; Add Friend</a></div>';
 	}
 	
 echo '
@@ -143,12 +142,12 @@ if(isset($clearance['post']))
 			<div><span class="post-icon icon-calendar"></span>  &nbsp; ' . date("M jS") . '</div>
 		</div>
 		<div style="margin-bottom:8px;">
-			<form id="main_post_form" action="/' . You::$handle . '" method="post">' . Form::prepare("social-post") . '
+			<form class="uniform" id="main_post_form" action="/' . You::$handle . '" method="post">' . Form::prepare("social-post") . '
 				<img class="circimg-small" src="' . ProfilePic::image(Me::$id) . '" style="float:left; margin:10px 5px 10px 20px;" />
 				<p class="comment-box-wrap">
-					<textarea class="comment-box" name="mainPostBox" placeholder="Write a quick post . . ." onkeypress="return commentPost(event, 0);"></textarea>
+					<textarea class="comment-box" name="mainPostBox" placeholder="Write a quick post . . ." onkeypress="return commentPost(event, 0);" style="padding:10px; box-sizing:border-box; width:95%; margin-bottom:10px;"></textarea>
+					<br /><input class="" type="submit" name="main_post_submit" value="Submit Post" />
 				</p>
-				<input class="comment-box-input" type="submit" name="main_post_submit" value="Submit" hidefocus="true" tabindex="-1" />
 			</form>
 		</div>
 	</div>';
@@ -191,32 +190,6 @@ if(isset($clearance['access']))
 
 echo'
 </div>';
-
-// If you have permission to comment
-if(isset($clearance['comment'])) { ?>
-
-<script>
-
-// This function posts the comments automatically
-function commentPost(e, postID)
-{
-	if(e.keyCode == 13 || e.which == 13)
-	{
-		if(!e.shiftKey)
-		{
-			var getID = (postID == 0) ? "main_post_form" : "comment_" + postID;
-			
-			var getComment = document.getElementById(getID);
-			getComment.submit();
-			
-			return false;
-		}
-	}
-}
-
-</script>
-
-<?php }
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

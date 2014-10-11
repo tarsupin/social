@@ -20,7 +20,7 @@ if(Me::$id == $_GET['uniID'])
 }
 else
 {
-	list($viewClearance, $interactClearance) = Friends::getClearance(Me::$id, $_GET['uniID']);
+	list($viewClearance, $interactClearance) = AppFriends::getClearance(Me::$id, $_GET['uniID']);
 }
 
 // Determine Permissions

@@ -43,7 +43,7 @@ abstract class AppSocial {
 			if($userData = User::get($uniID, "uni_id"))
 			{
 				// Create the page
-				if(Database::query("INSERT INTO social_page (uni_id, perm_follow, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 0, 8, 6, 0)))
+				if(Database::query("INSERT INTO social_page (uni_id, perm_follow, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 5, 9, 5, 0)))
 				{
 					$permissions = Database::selectOne("SELECT has_headerPhoto, description, perm_follow, perm_access, perm_post, perm_comment, perm_approval FROM social_page WHERE uni_id=? LIMIT 1", array($uniID));
 				}
@@ -158,7 +158,7 @@ abstract class AppSocial {
 	// $postID = AppSocial::createPost($socialID, $posterID, $attachmentID, $message, [$link], [$whenToPost], [$hashData]);
 	{
 		// Prepare Values
-		$message = substr($message, 0, 1000);
+		$message = (string) substr($message, 0, 1000);
 		$whenToPost = ($whenToPost == 0 ? time() : $whenToPost + 0);
 		
 		// Create the Post
@@ -171,7 +171,7 @@ abstract class AppSocial {
 			$pass = Database::query("INSERT INTO `social_posts_user` (uni_id, id) VALUES (?, ?)", array($socialID, $postID));
 		}
 		
-		if(Database::endTransaction($pass && $postID))
+		if(Database::endTransaction(($pass and $postID)))
 		{
 			// Process the Comment (Hashtag, Credits, Notifications, etc)
 			Comment::process($posterID, $message, $link, $socialID, $hashData);
@@ -240,17 +240,16 @@ abstract class AppSocial {
 	public static function headerPhoto
 	(
 		int $uniID		// <int> The uniID of the person whose header photo you want to retrieve.
+	,	string $handle		// <str> The user's handle.
 	): array <str, mixed>				// RETURNS <str:mixed> the necessary url path (relative), FALSE on failure.
 	
 	// $urlPath = AppSocial::headerPhoto($uniID);
 	{
-		$fileAdd = substr(str_replace(array('+', '='), array('', ''), base64_encode(md5('My Social Profile TH for #' . $uniID))), 0, 8);
-		
 		return array(
-			"imageDir"		=> '/assets/headerPhoto'
+			"imageDir"		=> '/assets/headerPhotos'
 		,	"mainDir"		=> ceil($uniID / 25000)
-		,	"secondDir"		=> ceil(($uniID % 25000) / 100)
-		,	"filename"		=> $uniID . '-' . $fileAdd
+		,	"secondDir"		=> substr($handle, 0, 1)
+		,	"filename"		=> $handle
 		,	"ext"			=> 'jpg'
 		);
 	}
