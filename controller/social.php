@@ -145,7 +145,7 @@ if(isset($clearance['post']))
 			<form class="uniform" id="main_post_form" action="/' . You::$handle . '" method="post">' . Form::prepare("social-post") . '
 				<img class="circimg-small" src="' . ProfilePic::image(Me::$id) . '" style="float:left; margin:10px 5px 10px 20px;" />
 				<p class="comment-box-wrap">
-					<textarea class="comment-box" name="mainPostBox" placeholder="Write a quick post . . ." onkeypress="return commentPost(event, 0);" style="padding:10px; box-sizing:border-box; width:95%; margin-bottom:10px;"></textarea>
+					<textarea class="comment-box" name="mainPostBox" placeholder="Write a quick post . . ." onkeypress="return commentPost(event, 0);"></textarea>
 					<br /><input class="" type="submit" name="main_post_submit" value="Submit Post" />
 				</p>
 			</form>
@@ -182,7 +182,7 @@ if(isset($clearance['access']))
 	echo '
 	<div id="social-feed">';
 	
-	AppSocial::displayFeed($socialPosts);
+	AppSocial::displayFeed($socialPosts, $clearance);
 	
 	echo '
 	</div>';

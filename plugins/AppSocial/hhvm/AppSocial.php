@@ -259,6 +259,7 @@ abstract class AppSocial {
 	public static function displayFeed
 	(
 		array <int, array<str, mixed>> $socialPosts	// <int:[str:mixed]> The data that contains all of the social posts.
+	,	array <str, bool> $clearance		// <str:bool> The clearance levels for the page.
 	): void					// RETURNS <void> OUTPUTS the wall feed.
 	
 	// echo AppSocial::displayFeed($socialPosts);
@@ -439,10 +440,12 @@ abstract class AppSocial {
 			{
 				echo '
 					<div>
-						<form id="comment_' . $post['id'] . '"  action="/' . You::$handle . '" method="post">' . Form::prepare("social-post") . '
+						<form class="uniform" id="comment_' . $post['id'] . '"  action="/' . You::$handle . '" method="post">' . Form::prepare("social-post") . '
 							<img class="circimg-small post-avi" src="' . ProfilePic::image(Me::$id) . '" />
-							<p class="comment-box-wrap"><textarea class="comment-box" name="commentBox[' . $post['id'] . ']" value="" placeholder="Add a Comment . . ." onkeypress="return commentPost(event, ' . $post['id'] . ');"></textarea></p>
-							<input class="comment-box-input" type="submit" name="subCom_' . $post['id'] . '" value="Submit" hidefocus="true" tabindex="-1" />
+							<p class="comment-box-wrap">
+							<textarea class="comment-box" name="commentBox[' . $post['id'] . ']" value="" placeholder="Add a Comment . . ." onkeypress="return commentPost(event, ' . $post['id'] . ');"></textarea>
+							<br /><input class="comment-box-input" type="submit" name="subCom_' . $post['id'] . '" value="Post Comment" hidefocus="true" tabindex="-1" />
+							</p>
 						</form>
 					</div>';
 			}
