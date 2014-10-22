@@ -67,7 +67,7 @@ if(Form::submitted("social-post"))
 			if($postData = AppSocial::getPost(You::$id, $commentID))
 			{
 				// Create the comment
-				AppComment::create($postData['id'], Me::$id, $comment, "/test", You::$id);
+				AppComment::create((int) $postData['id'], Me::$id, $comment, "/test", You::$id);
 				// URL::unifaction_social() . "/" . You::$handle
 			}
 		}
