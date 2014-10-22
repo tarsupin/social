@@ -418,7 +418,10 @@ abstract class AppSocial {
 				// Display Last Three Comments
 				foreach($comments as $comment)
 				{
-					$cpID = $comment['uni_id'];
+					// Recognize Integers
+					$cpID = (int) $comment['uni_id'];
+					$comment['id'] = (int) $comment['id'];
+					$comment['date_posted'] = (int) $comment['date_posted'];
 					
 					if(!isset(User::$cache[$cpID]))
 					{
@@ -428,7 +431,7 @@ abstract class AppSocial {
 					// Display the Comment
 					echo '
 					<div>
-						<div style="float:left; margin-left:12px;"><a href="/' . User::$cache[$cpID]['handle'] . '"><img class="circimg-small" src="' . ProfilePic::image($comment['uni_id'], "small") . '" /></a></div>
+						<div style="float:left; margin-left:12px;"><a href="/' . User::$cache[$cpID]['handle'] . '"><img class="circimg-small" src="' . ProfilePic::image($cpID, "small") . '" /></a></div>
 						<p class="post-message">' . Comment::showSyntax($comment['comment']) . '
 							<br /><span style="font-size:0.8em;">' . User::$cache[$cpID]['display_name'] . ' &bull; ' . Time::fuzzy($comment['date_posted']) . '</span>
 						</p>
