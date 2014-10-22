@@ -271,6 +271,7 @@ abstract class AppSocial {
 		foreach($socialPosts as $post)
 		{
 			// Recognize Integers
+			$post['id'] = (int) $post['id'];
 			$post['date_posted'] = (int) $post['date_posted'];
 			$post['attachment_id'] = (int) $post['attachment_id'];
 			
