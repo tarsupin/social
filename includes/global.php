@@ -3,9 +3,6 @@
 // Logged In Functionality
 if(Me::$loggedIn)
 {
-	// Notifications (if available)
-	WidgetLoader::add("SidePanel", 1, Notifications::sideWidget());
-	
 	// Main Navigation
 	WidgetLoader::add("SidePanel", 10, '
 	<div class="panel-box">

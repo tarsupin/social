@@ -8,12 +8,9 @@ define("SYS_PATH", 		dirname(CONF_PATH) . "/system");
 require(SYS_PATH . "/phpTesla.php");
 
 // Initialize and Test Active User's Behavior
-Me::$getColumns = "uni_id, handle, clearance, role, display_name, has_instructions, has_notifications";
+Me::$getColumns = "uni_id, handle, clearance, role, display_name";
 
-if(Me::initialize())
-{
-	Me::runBehavior($url);
-}
+Me::initialize();
 
 // Determine which page you should point to, then load it
 require(SYS_PATH . "/routes.php");

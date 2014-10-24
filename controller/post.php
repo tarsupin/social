@@ -135,7 +135,7 @@ if(Form::submitted("social-post-adv"))
 		if(FormValidate::pass())
 		{
 			// Create the post
-			$postID = AppSocial::createPost(Me::$id, Me::$id, $attachmentID, $_POST['message'], "", ($_POST['post_hours'] ? (time() + round(3600 * $_POST['post_hours'])) : 0), $hashData);
+			$postID = AppSocial::createPost(Me::$id, Me::$id, $attachmentID, $_POST['message'], "", ($_POST['post_hours'] ? (int) (time() + round(3600 * $_POST['post_hours'])) : 0), $hashData);
 			
 			// Display Success
 			Alert::saveSuccess("Post Successful", "You have successfully posted to your wall!");

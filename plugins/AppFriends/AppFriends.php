@@ -202,7 +202,7 @@ abstract class AppFriends {
 		// Notify the friend that there is a friend request
 		$userdata = User::get($uniID, "handle, display_name");
 		
-		Notifications::create($friendID, "Friend Request", $userdata['display_name'] . " (@" . $userdata['handle'] . ") has sent you a friend request.", '/friends/requests', $uniID, true);
+		Notifications::create($friendID, URL::unifaction_social() . "/" . $userData['handle'], "@" . $userdata['handle'] . " has sent you a friend request.");
 		
 		return true;
 	}
@@ -262,7 +262,7 @@ abstract class AppFriends {
 			// Notify the friend that there is a friend request
 			$userdata = User::get($uniID, "handle, display_name");
 			
-			Notifications::create($friendID, "Friend Approval", $userdata['display_name'] . " (@" . $userdata['handle'] . ") has approved your friend request.", '/friends/requests', $uniID, true);
+			Notifications::create($friendID, URL::unifaction_social() . "/" . $userData['handle'], "@" . $userdata['handle'] . " has approved your friend request.");
 		}
 		
 		return $success;
