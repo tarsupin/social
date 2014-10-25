@@ -27,6 +27,7 @@ if(Me::$id == You::$id)
 }
 else
 {
+	// Get the View and Interact clearance with the other user
 	list($viewClearance, $interactClearance) = AppFriends::getClearance(Me::$id, You::$id);
 	
 	// Track engagement with this user (view rate)
@@ -35,6 +36,12 @@ else
 
 // Determine Permissions
 $clearance = AppSocial::clearance(Me::$id, $viewClearance, $interactClearance, $socialPage);
+
+// Delete a Post
+if($getData = Link::getData("delete-post") and is_array($getData) and isset($getData[0]))
+{
+	AppSocial::deletePost(You::$id, (int) $getData[0]);
+}
 
 // If you submitted content (post or comment)
 if(Form::submitted("social-post"))

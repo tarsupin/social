@@ -30,7 +30,6 @@ class AppSocial_config {
 			`has_headerPhoto`		tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			`description`			varchar(80)					NOT NULL	DEFAULT '',
 			
-			`perm_follow`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			`perm_access`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			`perm_post`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			`perm_comment`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',

@@ -33,7 +33,7 @@ abstract class AppSocial {
 	
 	// $socialPage = AppSocial::getPage($uniID);
 	{
-		$permissions = Database::selectOne("SELECT has_headerPhoto, description, perm_follow, perm_access, perm_post, perm_comment, perm_approval FROM social_page WHERE uni_id=? LIMIT 1", array($uniID));
+		$permissions = Database::selectOne("SELECT has_headerPhoto, description, perm_access, perm_post, perm_comment, perm_approval FROM social_page WHERE uni_id=? LIMIT 1", array($uniID));
 		
 		if(!$permissions)
 		{
@@ -43,16 +43,15 @@ abstract class AppSocial {
 			if($userData = User::get($uniID, "uni_id"))
 			{
 				// Create the page
-				if(Database::query("INSERT INTO social_page (uni_id, perm_follow, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 5, 9, 5, 0)))
+				if(Database::query("INSERT INTO social_page (uni_id, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 5, 9, 5, 0)))
 				{
-					$permissions = Database::selectOne("SELECT has_headerPhoto, description, perm_follow, perm_access, perm_post, perm_comment, perm_approval FROM social_page WHERE uni_id=? LIMIT 1", array($uniID));
+					$permissions = Database::selectOne("SELECT has_headerPhoto, description, perm_access, perm_post, perm_comment, perm_approval FROM social_page WHERE uni_id=? LIMIT 1", array($uniID));
 				}
 			}
 		}
 		
 		// Recognize Integers
 		$permissions['has_headerPhoto'] = (int) $permissions['has_headerPhoto'];
-		$permissions['perm_follow'] = (int) $permissions['perm_follow'];
 		$permissions['perm_access'] = (int) $permissions['perm_access'];
 		$permissions['perm_post'] = (int) $permissions['perm_post'];
 		$permissions['perm_comment'] = (int) $permissions['perm_comment'];
@@ -75,7 +74,6 @@ abstract class AppSocial {
 	{
 		/*
 			Permissions:
-			'follow'		// 0 = guests, 3 = followers, 6 = friends
 			'access'		// 0 = guests, 5 = friends
 			'post'			// 5 = friends, 7 = mods, 8 = admin, 9 = superadmin
 			'comment'		// 0 = guests, 5 = friends, 7 = mods, 8 = admins, 9 = superadmin
@@ -86,7 +84,6 @@ abstract class AppSocial {
 		if(!$permissions)
 		{
 			$permissions['perm_access'] = 0;		// Guests can view
-			$permissions['perm_follow'] = 0;		// Guests can follow
 			$permissions['perm_post'] = 8;			// Mods can post (or users with uber-access)
 			$permissions['perm_comment'] = 6;		// Friends can comment
 			$permissions['perm_approval'] = 0;		// Nobody requires special approval
@@ -94,11 +91,18 @@ abstract class AppSocial {
 		
 		$clearance = array();
 		
+		// If you own the page, or if the user is a moderator
+		$clearance['admin'] = (Me::$id == You::$id or Me::$clearance >= 6) ? true : false;
+		
 		if($viewClearance >= $permissions['perm_access']) { $clearance['access'] = true; }
-		if($viewClearance >= $permissions['perm_follow']) { $clearance['follow'] = true; }
 		if($interactClearance >= $permissions['perm_post']) { $clearance['post'] = true; }
 		if($interactClearance >= $permissions['perm_comment']) { $clearance['comment'] = true; }
 		if($interactClearance < $permissions['perm_approval']) { $clearance['approval'] = true; }
+		
+		if($clearance['admin'])
+		{
+			$clearance['perm_access'] = true;
+		}
 		
 		return $clearance;
 	}
@@ -194,9 +198,12 @@ abstract class AppSocial {
 	{
 		Database::startTransaction();
 		
-		if($pass = Database::query("DELETE FROM `social_posts_user` WHERE uni_id=? AND id=? LIMIT 1", array($uniID, $postID)))
+		if($pass = Database::query("DELETE FROM social_posts_user WHERE uni_id=? AND id=? LIMIT 1", array($uniID, $postID)))
 		{
-			$pass = Database::query("DELETE FROM `social_posts` WHERE id=? LIMIT 1", array($postID));
+			if($pass = Database::query("DELETE FROM social_posts WHERE id=? LIMIT 1", array($postID)))
+			{
+				$pass = Database::query("DELETE cp, c FROM comments_posts cp INNER JOIN comments c ON cp.id=c.id WHERE cp.post_id=?", array($postID));
+			}
 		}
 		
 		return Database::endTransaction($pass);
@@ -390,7 +397,15 @@ abstract class AppSocial {
 			echo '
 				<div class="extralinks">
 					<a href="/share?id=' . $post['id'] . '">Share</a>
-					<a href="/' . You::$handle . "?" . Link::prepareData("send-tip-social", You::$id) . '">Tip ' . You::$name . '</a>
+					<a href="/' . You::$handle . "?" . Link::prepareData("send-tip-social", You::$id) . '">Tip ' . You::$name . '</a>';
+					
+					if($clearance['admin'])
+					{
+						echo '
+						<a href="/' . You::$handle . '?' . Link::prepareData("delete-post", $post['id']) . '" onclick="return confirm(\'Are you sure you want to delete this?\');">Delete</a>';
+					}
+			
+			echo '
 				</div>';
 			
 			// Show Comments

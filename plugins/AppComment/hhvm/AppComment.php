@@ -95,12 +95,20 @@ abstract class AppComment {
 /****** Delete a Comment ******/
 	public static function delete
 	(
-		int $commentID		// <int> The ID of the comment to delete.
+		int $postID			// <int> The post ID that the comment was added to.
+	,	int $commentID		// <int> The ID of the comment to delete.
 	): bool					// RETURNS <bool> TRUE if successful, FALSE otherwise.
 	
-	// AppComment::delete($commentID);
+	// AppComment::delete($postID, $commentID);
 	{
-		return Database::query("DELETE FROM `comments` WHERE id=? LIMIT 1", array($commentID));
+		Database::startTransaction();
+		
+		if($pass = Database::query("DELETE FROM `comments` WHERE id=? LIMIT 1", array($commentID)))
+		{
+			$pass = Database::query("DELETE FROM comments_posts WHERE post_id=? AND id=? LIMIT 1", array($postID, $commentID));
+		}
+		
+		return Database::endTransaction($pass);
 	}
 	
 }
