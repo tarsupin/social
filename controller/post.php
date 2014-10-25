@@ -6,6 +6,15 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/post");
 }
 
+// Set the time for calendar
+$getNow = date("Y-m-d H:i:s"); // Stores the current time & date so that the Rome.js Calendar knows what your current time (and so that people can't schedule posts in the past)
+$getMax =  date("Y-m-d H:i:s", time() + (3600 * 24 * 60)); // Stores the maximum calendar date (6 Months)
+
+// Prepare the Metadata
+Metadata::addFooter('<script src="' . CDN . '/scripts/rome.js"></script>'); // Including Rome.js
+Metadata::addHeader('<link rel="stylesheet" type="text/css" href="' . CDN . '/css/rome.css" />'); // Including the calendar style
+Metadata::addFooter('<script>rome(dt, { min: "' . $getNow . '" , max: "' . $getMax . '", inputFormat: "YYYY-MM-DD HH:mm:ss"})</script>'); // Initializing the Calendar (Rome.js)
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -18,7 +27,7 @@ if(Form::submitted("social-post-adv"))
 	$subVideo = ($_POST['video'] != "") ? true : false;
 	
 	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, ($subImage or $subVideo) ? 300 : 1000);
-	FormValidate::number("Post Time", $_POST['post_hours'], 0, 9999);
+	FormValidate::variable("valid date", $_POST['post_date'], 0, 19, ":- ");
 	
 	if($subVideo) { FormValidate::url("Video URL", $_POST['video'], 1, 255); }
 	if($subImage) { FormValidate::filepath("Image URL", $_FILES['image']['tmp_name'], 1, 255); }
@@ -135,7 +144,7 @@ if(Form::submitted("social-post-adv"))
 		if(FormValidate::pass())
 		{
 			// Create the post
-			$postID = AppSocial::createPost(Me::$id, Me::$id, $attachmentID, $_POST['message'], "", ($_POST['post_hours'] ? (int) (time() + round(3600 * $_POST['post_hours'])) : 0), $hashData);
+			$postID = AppSocial::createPost(Me::$id, Me::$id, $attachmentID, $_POST['message'], "", strtotime($_POST['post_date']), $hashData);
 			
 			// Display Success
 			Alert::saveSuccess("Post Successful", "You have successfully posted to your wall!");
@@ -148,7 +157,7 @@ if(Form::submitted("social-post-adv"))
 $_POST['message'] = isset($_POST['message']) ? Sanitize::text($_POST['message']) : "";
 $_POST['image'] = isset($_POST['image']) ? Sanitize::filepath($_POST['video']) : "";
 $_POST['video'] = isset($_POST['video']) ? Sanitize::url($_POST['video']) : "";
-$_POST['post_hours'] = (isset($_POST['post_hours']) and $_POST['post_hours'] != 0) ? $_POST['post_hours'] + 0 : "0.0";
+$_POST['post_date'] = (isset($_POST['post_date'])) ? $_POST['post_date'] : $getNow;
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
@@ -171,7 +180,7 @@ echo '
 		<textarea name="message" placeholder="Write your message here . . ." style="width:90%;" tabindex="10" autofocus>' . htmlspecialchars($_POST['message']) . '</textarea></p>
 	<p>Upload Image: <input type="file" name="image" value="' . $_POST['image'] . '"></p>
 	<p>Video URL: <input type="text" name="video" value="' . $_POST['video'] . '"> (from vimeo.com or youtube.com)</p>
-	<p>Post In: <input type="text" name="post_hours" value="' . $_POST['post_hours'] . '" size="6" maxlength="6"> hours</p>
+	<p>Post at: <input type="text" id="dt" name="post_date" class="input" value="' . $_POST['post_date'] . '" size="15"></p>
 	<p><input type="submit" name="submit" value="Submit Post" tabindex="20"></p>
 </form>
 </div>
