@@ -224,6 +224,18 @@ abstract class AppFriends {
 			$pass = Database::query("DELETE IGNORE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID));
 		}
 		
+		if($pass)
+		{
+			// Prepare the packet with details about the friends to remove
+			$packet = array(
+				"uni_id" => $uniID
+			,	"friend_id" => $friendID
+			);
+			
+			// Run the API
+			$pass = Connect::to("sync_friends", "RemoveFriendAPI", $packet);
+		}
+		
 		return Database::endTransaction($pass);
 	}
 	
@@ -254,15 +266,29 @@ abstract class AppFriends {
 			}
 		}
 		
+		if($pass)
+		{
+			// Prepare the packet with details about adding the friend (Friend Sync)
+			$packet = array(
+				"uni_id"		=> $uniID
+			,	"friend_id"		=> $friendID
+			);
+			
+			// Run the API
+			$pass = Connect::to("sync_friends", "AddFriendAPI", $packet);
+		}
+		
 		$success = Database::endTransaction($pass);
 		
 		// Notify the friend of the friend update
 		if($success)
 		{
-			// Notify the friend that there is a friend request
-			$userdata = User::get($uniID, "handle, display_name");
-			
-			Notifications::create($friendID, URL::unifaction_social() . "/" . $userData['handle'], "@" . $userdata['handle'] . " has approved your friend request.");
+			// Get data about the User
+			if($userData = User::get($uniID, "handle, display_name"))
+			{
+				// Notify the friend that the request was approved
+				Notifications::create($friendID, URL::unifaction_social() . "/" . $userData['handle'], "@" . $userData['handle'] . " has approved your friend request.");
+			}
 		}
 		
 		return $success;

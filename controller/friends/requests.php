@@ -45,12 +45,6 @@ if(isset($_GET['friend']))
 // Get the list of friend requests
 $requests = AppFriends::getRequestList(Me::$id, 0, 20);
 
-// If you have no friend requests, return to the last page
-if(count($requests) == 0)
-{
-	header("Location: /friends"); exit;
-}
-
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -74,6 +68,11 @@ echo '
 // Display your friend requests
 echo '
 <h3>Friend Requests</h3>';
+
+if(count($requests) == 0)
+{
+	echo '<p>There are no friend requests open right now.</p>';
+}
 
 // Cycle through each friend request
 foreach($requests as $request)

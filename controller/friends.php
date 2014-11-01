@@ -45,7 +45,7 @@ function UserHandle(handle)
 <div>
 <h3>Add New Friends</h3>';
 
-echo Search::searchBarUserHandle("userHandle", "", "", "search", "Search for friends . . .") . "<br />";
+echo Search::searchBarUserHandle("userHandle", "", "", "", "search", "Search for friends . . .") . "<br />";
 
 // Display your friend requests, if applicable
 if(count($requests) > 0)

@@ -19,6 +19,11 @@ else if(isset($_GET['friend']))
 // Deliver the Friend Data
 if(!$friendData)
 {
+	$friendData = User::silentRegister($_GET['friend']);
+}
+
+if(!$friendData)
+{
 	Alert::saveError("Friend Invalid", "The friend selected is invalid.", 2);
 	
 	header("Location: /friends"); exit;

@@ -91,9 +91,6 @@ if($getData = Link::getData("send-tip-social") and is_array($getData) and isset(
 // Include Responsive Script
 Photo::prepareResponsivePage();
 
-// Prepare the Metadata
-Metadata::addHeader('<script src="' . CDN . '/scripts/autoscroll.js"></script>');
-
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 

@@ -3,28 +3,7 @@
 ****** Page Layout ******
 ************************/
 
-@media screen and (min-width:1421px) {
-	#content { margin-left:260px; max-width:100%; margin-right:325px; padding:0px; }
-	#panel-right { width:300px; }
-}
 
-@media screen and (min-width:1121px) and (max-width:1420px) {
-	#content { margin-left:260px; max-width:100%; margin-right:10px; padding:0px; }
-}
-
-@media screen and (min-width:921px) and (max-width:1120px) {
-	#content { margin-left:260px; margin-right:10px; padding:0px; }
-}
-
-@media screen and (min-width:501px) and (max-width:920px) {
-	#content { margin-left:0px; margin-right:10px; padding:0px; }
-}
-
-@media screen and (max-width:500px) {
-	#content { margin-left:0px; padding:0px; }
-}
-
-#panel-left { width:245px; }
 
 
 /******************

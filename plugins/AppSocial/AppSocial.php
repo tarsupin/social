@@ -43,7 +43,7 @@ abstract class AppSocial {
 			if($userData = User::get($uniID, "uni_id"))
 			{
 				// Create the page
-				if(Database::query("INSERT INTO social_page (uni_id, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 5, 9, 5, 0)))
+				if(Database::query("INSERT INTO social_page (uni_id, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?)", array($userData['uni_id'], 5, 9, 5, 0)))
 				{
 					$permissions = Database::selectOne("SELECT has_headerPhoto, description, perm_access, perm_post, perm_comment, perm_approval FROM social_page WHERE uni_id=? LIMIT 1", array($uniID));
 				}
