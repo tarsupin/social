@@ -34,7 +34,7 @@ abstract class AppFeed {
 		$lastUpdate = self::lastUpdate($uniID);
 		
 		// If you haven't updated your feed for at least 15 minutes (900 seconds)
-		if(time() > ($lastUpdate + 900))
+		if(time() > ($lastUpdate + 900) or true)
 		{
 			/*
 				Note: Eventually we'll want to get more clever with posts. Find associations between
@@ -54,11 +54,8 @@ abstract class AppFeed {
 			// Cycle through friends, favored by friend engagement and recent activity
 			// Then cycle through posts, determine post engagement
 			
-			// NOTE: THIS IS A TERRIBLE SYSTEM. LETS CHANGE THIS.
-			return;
-			
 			// Get your friends (in order of engagement value)
-			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friend_list WHERE uni_id=?", array($uniID));
+			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friends_list WHERE uni_id=?", array($uniID));
 			
 			$friendCount = count($friends);
 			$limitScan = ($friendCount < 10 ? 5 : ($friendCount < 50 ? 4 : ($friendCount < 100 ? 3 : 2)));
@@ -66,7 +63,7 @@ abstract class AppFeed {
 			foreach($friends as $friend)
 			{
 				// Get the friends most recent posts
-				$posts = Database::selectMultiple("SELECT sp.id, sp.attachment_id, sp.has_comments, sp.date_posted FROM social_posts_user spu INNER JOIN social_posts sp WHERE spu.uni_id=? ORDER BY id DESC LIMIT " . $limitScan, array((int) $friend['friend_id']));
+				$posts = Database::selectMultiple("SELECT * FROM social_posts_user spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id']));
 				
 				foreach($posts as $post)
 				{
@@ -95,11 +92,12 @@ abstract class AppFeed {
 			
 			arsort($postList);
 			
-			// Destroy the user's current social feed
 			Database::startTransaction();
 			
+			// Destroy the user's current social feed
 			Database::query("DELETE FROM social_feed WHERE uni_id=?", array($uniID));
 			
+			// Build the new social feed
 			foreach($postList as $key => $value)
 			{
 				Database::query("INSERT INTO social_feed (uni_id, engage_value, post_id) VALUES (?, ?, ?)", array($uniID, $value, $key));
