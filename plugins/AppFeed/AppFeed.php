@@ -34,7 +34,7 @@ abstract class AppFeed {
 		$lastUpdate = self::lastUpdate($uniID);
 		
 		// If you haven't updated your feed for at least 15 minutes (900 seconds)
-		if(time() > ($lastUpdate + 900) or true)
+		if(time() > ($lastUpdate + 900))
 		{
 			/*
 				Note: Eventually we'll want to get more clever with posts. Find associations between
