@@ -11,6 +11,7 @@ abstract class Install extends Installation {
 		"Analytics"			=> true
 	,	"Attachment"		=> true
 	,	"UserActivity"		=> true
+	,	"FeaturedWidget"	=> true
 	,	"Friends"			=> true
 	,	"Notifications"		=> true
 	);

@@ -11,15 +11,21 @@ if(isset($_GET['id']))
 {
 	$friendData = User::get((int) $_GET['id'], "uni_id, handle, display_name");
 }
-else if(isset($_GET['friend']))
+else if(isset($_GET['handle']))
 {
-	$friendData = User::getDataByHandle($_GET['friend'], "uni_id, handle, display_name");
+	$_GET['handle'] = Sanitize::variable($_GET['handle']);
+	
+	$friendData = User::getDataByHandle($_GET['handle'], "uni_id, handle, display_name");
+}
+else
+{
+	header("Location: /friends"); exit;
 }
 
 // Deliver the Friend Data
 if(!$friendData)
 {
-	$friendData = User::silentRegister($_GET['friend']);
+	$friendData = User::silentRegister($_GET['handle']);
 }
 
 if(!$friendData)
