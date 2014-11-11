@@ -200,9 +200,9 @@ abstract class AppFriends {
 		}
 		
 		// Notify the friend that there is a friend request
-		$userdata = User::get($uniID, "handle, display_name");
+		$userData = User::get($uniID, "handle, display_name");
 		
-		Notifications::create($friendID, URL::unifaction_social() . "/" . $userData['handle'], "@" . $userdata['handle'] . " has sent you a friend request.");
+		Notifications::create($friendID, URL::unifaction_social() . "/friends", "@" . $userData['handle'] . " has sent you a friend request.");
 		
 		return true;
 	}

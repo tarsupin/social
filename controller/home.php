@@ -55,7 +55,7 @@ else if(count($feedPosts) == 0)
 foreach($feedPosts as $post)
 {
 	// Get the user's display name if we don't have it already (reduces times caled)
-	$pID = $post['poster_id'];
+	$pID = (int) $post['poster_id'];
 	$post['date_posted'] = (int) $post['date_posted'];
 	
 	if(!isset(User::$cache[$pID]))
@@ -77,14 +77,13 @@ foreach($feedPosts as $post)
 			<div class="extralinks">
 				<a href="#">Reply</a>
 				<a href="#">ReChat</a>
-				<a href="#">Tip Danny</a>
 			</div>';
 	
 	// Show Comments
 	if($post['has_comments'] > 0)
 	{
 		// Get Comments
-		$comments = AppComment::getList($post['id'], 0, 3, "DESC");
+		$comments = AppComment::getList((int) $post['id'], 0, 3, "DESC");
 		$comLen = count($comments);
 		
 		// Reverse the order (since you're providing the last three)
@@ -105,7 +104,7 @@ foreach($feedPosts as $post)
 		// Display Last Three Comments
 		foreach($comments as $comment)
 		{
-			$cpID = $comment['uni_id'];
+			$cpID = (int) $comment['uni_id'];
 			$comment['date_posted'] = (int) $comment['date_posted'];
 			
 			if(!isset(User::$cache[$cpID]))
@@ -116,7 +115,7 @@ foreach($feedPosts as $post)
 			// Display the Comment
 			echo '
 			<div>
-				<div style="float:left; margin-left:12px;"><a href="/' . User::$cache[$cpID]['handle'] . '"><img class="circimg-small" src="' . ProfilePic::image($comment['uni_id'], "small") . '" /></a></div>
+				<div style="float:left; margin-left:12px;"><a href="/' . User::$cache[$cpID]['handle'] . '"><img class="circimg-small" src="' . ProfilePic::image($cpID, "small") . '" /></a></div>
 				<p class="post-message">' . Comment::showSyntax($comment['comment']) . '
 					<br /><span style="font-size:0.8em;">' . User::$cache[$cpID]['display_name'] . ' &bull; ' . Time::fuzzy($comment['date_posted']) . '</span>
 				</p>
