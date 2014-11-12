@@ -73,10 +73,6 @@ foreach($feedPosts as $post)
 			<div>
 				<a href="/' . User::$cache[$pID]['handle'] . '"><img class="circimg" src="' . ProfilePic::image($pID, "large") . '" /></a>
 				<p class="post-message">' . Comment::showSyntax($post['post']) . '</p>
-			</div>
-			<div class="extralinks">
-				<a href="#">Reply</a>
-				<a href="#">ReChat</a>
 			</div>';
 	
 	// Show Comments

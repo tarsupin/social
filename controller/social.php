@@ -121,7 +121,6 @@ else
 echo '
 <div id="top-bar">
 	<img id="top-bar-img" src="' . $headPhoto . '" />
-	<div id="top-bar-fade"></div>
 	<div id="top-avi-wrap">
 		<img id="top-propic" src="' . ProfilePic::image(You::$id, $size = "large") . '" />
 	</div>

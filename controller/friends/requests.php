@@ -79,9 +79,9 @@ foreach($requests as $request)
 {
 	echo '
 	<div class="friend-block">
-		<img class="circimg" src="' . ProfilePic::image((int) $request['friend_id'], "medium") . '" />
-		<br /><a href="' . URL::unifaction_social() . '">' . $request['display_name'] . '</a>
-		<br /><a href="' . URL::fastchat_social() . '">@' . $request['handle'] . '</a>
+		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['friend_id'], "medium") . '" /></a>
+		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
+		<br /><a href="' . URL::fastchat_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 		<br /><br /><a class="button" href="/friends/requests?friend=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
 		<br /><a class="button" href="/friends/requests?friend=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
 	</div>';

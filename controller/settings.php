@@ -42,7 +42,7 @@ if(Form::submitted("upl-social-header"))
 			if(FormValidate::pass())
 			{
 				// Save the original image
-				$image->autoCrop(1140, 400);
+				$image->autoCrop(1200, 420);
 				$image->save($imageDir . "/" . $imageUpload->filename . ".jpg");
 				
 				// Set the user as having a header photo
