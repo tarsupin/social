@@ -55,7 +55,7 @@ abstract class AppFeed {
 			// Then cycle through posts, determine post engagement
 			
 			// Get your friends (in order of engagement value)
-			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friends_list WHERE uni_id=?", array($uniID));
+			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friends_list WHERE uni_id=? ORDER BY engage_value DESC LIMIT 500", array($uniID));
 			
 			$friendCount = count($friends);
 			$limitScan = ($friendCount < 10 ? 5 : ($friendCount < 50 ? 4 : ($friendCount < 100 ? 3 : 2)));
@@ -63,7 +63,7 @@ abstract class AppFeed {
 			foreach($friends as $friend)
 			{
 				// Get the friends most recent posts
-				$posts = Database::selectMultiple("SELECT * FROM social_posts_user spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id']));
+				$posts = Database::selectMultiple("SELECT * FROM social_posts_user spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id'], (int) $friend['friend_id']));
 				
 				foreach($posts as $post)
 				{

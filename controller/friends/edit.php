@@ -7,7 +7,7 @@ if(!Me::$loggedIn)
 }
 
 // Get the friend that you're interacting with
-if(!isset($_GET['friend']) or !$friend = User::getDataByHandle($_GET['friend'], "uni_id, display_name, handle"))
+if(!isset($_GET['handle']) or !$friend = User::getDataByHandle($_GET['handle'], "uni_id, display_name, handle"))
 {
 	Alert::saveError("Invalid Friend", "That friend is not valid.", 4);
 	
@@ -75,7 +75,7 @@ echo '
 
 <h3>Edit Friend: ' . $friend['display_name'] . ' (@' . $friend['handle'] . ')</h3>
 
-<form class="uniform" action="/friends/edit?friend=' . $friend['handle'] . '" method="post">' . Form::prepare('friend-update') . '
+<form class="uniform" action="/friends/edit?handle=' . $friend['handle'] . '" method="post">' . Form::prepare('friend-update') . '
 <div id="friend-block">
 	<p>
 		<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($friend['uni_id'], "large") . '" /></a>

@@ -7,10 +7,10 @@ if(!Me::$loggedIn)
 }
 
 // Run the Request Updates
-if(isset($_GET['friend']))
+if(isset($_GET['handle']))
 {
 	// Get Friend Data
-	if($friend = User::getDataByHandle($_GET['friend'], "uni_id, handle, display_name"))
+	if($friend = User::getDataByHandle($_GET['handle'], "uni_id, handle, display_name"))
 	{
 		// Recognize Integer
 		$friend['uni_id'] = (int) $friend['uni_id'];
@@ -44,6 +44,9 @@ if(isset($_GET['friend']))
 
 // Get the list of friend requests
 $requests = AppFriends::getRequestList(Me::$id, 0, 20);
+
+// Get the list of friend requests sent out
+$requestsSent = AppFriends::getRequestSentList(Me::$id, 0, 20);
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -82,8 +85,28 @@ foreach($requests as $request)
 		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['friend_id'], "medium") . '" /></a>
 		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
 		<br /><a href="' . URL::fastchat_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
-		<br /><br /><a class="button" href="/friends/requests?friend=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
-		<br /><a class="button" href="/friends/requests?friend=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
+		<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
+		<br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
+	</div>';
+}
+
+// Display your friend requests sent out
+echo '
+<h3 style="margin-top:22px;">Your Pending Friend Requests</h3>';
+
+if(count($requests) == 0)
+{
+	echo '<p>There are currently no sent friend requests waiting on responses.</p>';
+}
+
+// Cycle through each friend request sent
+foreach($requestsSent as $request)
+{
+	echo '
+	<div class="friend-block">
+		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
+		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
+		<br /><a href="' . URL::fastchat_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 	</div>';
 }
 

@@ -45,7 +45,8 @@ class AppFriends_config {
 			`view_clearance`		tinyint(1)					NOT NULL	DEFAULT '0',
 			`interact_clearance`	tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
-			UNIQUE (`uni_id`, `friend_id`)
+			UNIQUE (`uni_id`, `friend_id`),
+			INDEX (`friend_id`, `uni_id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(friend_id) PARTITIONS 3;
 		");
 		

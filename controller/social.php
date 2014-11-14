@@ -50,7 +50,7 @@ if(Form::submitted("social-post"))
 	if(isset($_POST['mainPostBox']) && isset($clearance['post']))
 	{
 		// Make sure the post is within an acceptable limit
-		FormValidate::text("Post", $_POST['mainPostBox'], 1, 1000);
+		FormValidate::text("Post", $_POST['mainPostBox'], 1, 1000, chr(13));
 		
 		if(FormValidate::pass())
 		{
@@ -129,7 +129,7 @@ echo '
 	if($viewClearance < 2)
 	{
 		echo '
-		<div id="top-connect"><a href="/friends/send-request?friend=' . You::$handle . '" class="button"><span class="icon-user"></span> &nbsp; Add Friend</a></div>';
+		<div id="top-connect"><a href="/friends/send-request?handle=' . You::$handle . '" class="button"><span class="icon-user"></span> &nbsp; Add Friend</a></div>';
 	}
 	
 echo '

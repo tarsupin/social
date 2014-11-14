@@ -89,18 +89,30 @@ abstract class AppFriends {
 	}
 	
 	
+/****** Get the total count of friends of a user ******/
+	public static function getFriendCount
+	(
+		$uniID					// <int> The UniID of the user to find friends of.
+	)							// RETURNS <int> the total friend count of a user.
+	
+	// $friendCount = AppFriends::getFriendCount($uniID);
+	{
+		return (int) Database::selectValue("SELECT COUNT(*) as totalNum FROM friends_list WHERE uni_id=? LIMIT 1", array($uniID));
+	}
+	
+	
 /****** Get the list of friends of a user ******/
 	public static function getList
 	(
 		$uniID					// <int> The UniID of the user to find friends of.
-	,	$startPos = 0			// <int> The row number to start at.
-	,	$limit = 20				// <int> The number of rows to return.
+	,	$page = 1				// <int> The row number to start at.
+	,	$numRows = 20			// <int> The number of rows to return.
 	,	$byEngagement = false	// <bool> Sort the list by engagement value.
 	)							// RETURNS <int:[str:mixed]> the list of friends, array() on failure.
 	
-	// $friends = AppFriends::getList($uniID, [$startPos], [$limit], [$byEngagement]);
+	// $friends = AppFriends::getList($uniID, [$page], [$numRows], [$byEngagement]);
 	{
-		return Database::selectMultiple("SELECT f.friend_id, u.display_name, u.handle FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
+		return Database::selectMultiple("SELECT f.friend_id, u.display_name, u.handle FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID));
 	}
 	
 	
@@ -137,6 +149,20 @@ abstract class AppFriends {
 	// $requests = AppFriends::getRequestList($uniID, [$startPos], [$limit]);
 	{
 		return Database::selectMultiple("SELECT f.friend_id, f.view_clearance, f.interact_clearance, u.display_name, u.handle FROM friend_requests f INNER JOIN users u ON f.friend_id = u.uni_id WHERE f.uni_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
+	}
+	
+	
+/****** Get a list of a user's sent friend requests ******/
+	public static function getRequestSentList
+	(
+		$uniID			// <int> The UniID of the user to find friend requests they sent.
+	,	$startPos = 0	// <int> The row number to start at.
+	,	$limit = 20		// <int> The number of rows to return.
+	)					// RETURNS <int:[str:mixed]> the list containing friend requests.
+	
+	// $requestsSent = AppFriends::getRequestSentList($uniID, [$startPos], [$limit]);
+	{
+		return Database::selectMultiple("SELECT f.uni_id, f.view_clearance, f.interact_clearance, u.display_name, u.handle FROM friend_requests f INNER JOIN users u ON f.uni_id = u.uni_id WHERE f.friend_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
 	}
 	
 	
@@ -318,6 +344,8 @@ abstract class AppFriends {
 	
 	// AppFriends::trackEngagement($uniID, $targetID, $engageValue);
 	{
+		if(!$uniID) { return false; }
+		
 		/*
 			Engagement Levels:
 			View their page:		1

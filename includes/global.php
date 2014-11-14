@@ -4,20 +4,16 @@
 if(Me::$loggedIn)
 {
 	// UniFaction Dropdown Menu
-	WidgetLoader::add("UniFactionMenu", 10, '
-	<div class="menu-wrap hide-600">
-		<ul class="menu">
-			<li class="menu-slot' . ($url[0] == Me::$vals['handle'] ? " menu-active" : "") . '"><a href="/' . Me::$vals['handle'] . '">My Wall</a>
-			
-			</li><li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
-			
-			</li><li class="menu-slot' . ($url[0] == "post" ? " menu-active" : "") . '"><a href="/post">Adv. Post</a>
-			
-			</li><li class="menu-slot' . ($url[0] == "settings" ? " menu-active" : "") . '"><a href="/settings">Settings</a>
-			
-			</li><li class="menu-slot' . ($url[0] == "friends" ? " menu-active" : "") . '"><a href="/friends">Friends</a><ul><li class="dropdown-slot"><a href="/friends/requests">Friend Requests</a></li></ul></li>
-		</ul>
-	</div>');
+	$extraColumns = '
+	<li class="menu-slot' . ($url[0] == Me::$vals['handle'] ? " menu-active" : "") . '"><a href="/' . Me::$vals['handle'] . '">My Wall</a>
+	
+	</li><li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
+	
+	</li><li class="menu-slot' . ($url[0] == "post" ? " menu-active" : "") . '"><a href="/post">Adv. Post</a>
+	
+	</li><li class="menu-slot' . ($url[0] == "settings" ? " menu-active" : "") . '"><a href="/settings">Settings</a>
+	
+	</li><li class="menu-slot' . ($url[0] == "friends" ? " menu-active" : "") . '"><a href="/friends">Friends</a><ul><li class="dropdown-slot"><a href="/friends/requests">Friend Requests</a></li></ul></li>';
 	
 	// Main Navigation
 	WidgetLoader::add("SidePanel", 10, '
@@ -42,3 +38,7 @@ else
 		</ul>
 	</div>');
 }
+
+
+// Load the Social Menu
+require(SYS_PATH . "/controller/includes/social-menu.php");

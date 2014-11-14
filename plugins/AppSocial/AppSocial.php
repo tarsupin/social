@@ -390,7 +390,7 @@ abstract class AppSocial {
 				echo '
 				<div>
 					<a href="/' . User::$cache[$pID]['handle'] . '"><img class="circimg" src="' . ProfilePic::image($pID, "large") . '" /></a>
-					<p class="post-message">' . Comment::showSyntax($post['post']) . '</p>
+					<p class="post-message">' . nl2br(Comment::showSyntax($post['post'])) . '</p>
 				</div>';
 			}
 			
@@ -447,7 +447,7 @@ abstract class AppSocial {
 					echo '
 					<div>
 						<div style="float:left; margin-left:12px;"><a href="/' . User::$cache[$cpID]['handle'] . '"><img class="circimg-small" src="' . ProfilePic::image($cpID, "small") . '" /></a></div>
-						<p class="post-message">' . Comment::showSyntax($comment['comment']) . '
+						<p class="post-message">' . nl2br(Comment::showSyntax($comment['comment'])) . '
 							<br /><span style="font-size:0.8em;">' . User::$cache[$cpID]['display_name'] . ' &bull; ' . Time::fuzzy($comment['date_posted']) . '</span>
 						</p>
 					</div>';
