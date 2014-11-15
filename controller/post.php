@@ -15,6 +15,10 @@ Metadata::addFooter('<script src="' . CDN . '/scripts/rome.js"></script>'); // I
 Metadata::addHeader('<link rel="stylesheet" type="text/css" href="' . CDN . '/css/rome.css" />'); // Including the calendar style
 Metadata::addFooter('<script>rome(dt, { min: "' . $getNow . '" , max: "' . $getMax . '", inputFormat: "YYYY-MM-DD HH:mm:ss"})</script>'); // Initializing the Calendar (Rome.js)
 
+// Set the active user to yourself
+You::$id = Me::$id;
+You::$handle = Me::$vals['handle'];
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 

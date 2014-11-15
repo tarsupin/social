@@ -64,6 +64,10 @@ if(Form::submitted("upl-social-header"))
 	Alert::success("Settings Updated", "Your page settings have been updated.");
 }
 
+// Set the active user to yourself
+You::$id = Me::$id;
+You::$handle = Me::$vals['handle'];
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 

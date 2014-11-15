@@ -48,6 +48,10 @@ $requests = AppFriends::getRequestList(Me::$id, 0, 20);
 // Get the list of friend requests sent out
 $requestsSent = AppFriends::getRequestSentList(Me::$id, 0, 20);
 
+// Set the active user to yourself
+You::$id = Me::$id;
+You::$handle = Me::$vals['handle'];
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 

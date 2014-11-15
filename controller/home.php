@@ -9,10 +9,15 @@ if(Me::$loggedIn)
 	
 	// Get the list of posts in your feed
 	$feedPosts = AppFeed::get(Me::$id);
+	
+	// Set the active user to yourself
+	You::$id = Me::$id;
+	You::$handle = Me::$vals['handle'];
 }
 
 // Include Responsive Script
 Photo::prepareResponsivePage();
+
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");

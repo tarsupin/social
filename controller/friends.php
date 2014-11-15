@@ -22,6 +22,10 @@ $requests = AppFriends::getRequestList(Me::$id, 0, 4);
 // Prepare Values
 $fastchatURL = URL::fastchat_social();
 
+// Set the active user to yourself
+You::$id = Me::$id;
+You::$handle = Me::$vals['handle'];
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
