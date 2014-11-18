@@ -90,7 +90,7 @@ echo '
 <div id="content" class="content-open">' . Alert::display();
 
 echo '
-<h3>Would you like to send a friend request to <a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">' . $friendData['display_name'] . '</a> (<a href="' . URL::fastchat_social() . '/' . $friendData['handle'] . '">@' . $friendData['handle'] . '</a>)?</h3>
+<h3>Would you like to send a friend request to <a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">' . $friendData['display_name'] . '</a> (<a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">@' . $friendData['handle'] . '</a>)?</h3>
 
 <form class="uniform" action="/friends/send-request?id=' . $friendData['uni_id'] . '" method="post">' . Form::prepare("send-req-uf") . '
 <p><input type="submit" name="submit" value="Yes, Send Friend Request" /></p>

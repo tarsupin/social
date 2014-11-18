@@ -37,7 +37,7 @@ class AppPreference_config {
 		");
 		
 		Database::exec("
-		CREATE TABLE IF NOT EXISTS `friend_requests`
+		CREATE TABLE IF NOT EXISTS `friends_requests`
 		(
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`friend_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
@@ -81,7 +81,7 @@ class AppPreference_config {
 	{
 		// Make sure the newly installed tables exist
 		$pass1 = DatabaseAdmin::columnsExist("friend_engagement", array("uni_id", "friend_id"));
-		$pass2 = DatabaseAdmin::columnsExist("friend_requests", array("uni_id", "friend_id"));
+		$pass2 = DatabaseAdmin::columnsExist("friends_requests", array("uni_id", "friend_id"));
 		$pass3 = DatabaseAdmin::columnsExist("friends_list", array("uni_id", "friend_id"));
 		
 		return ($pass1 and $pass2 and $pass3);

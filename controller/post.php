@@ -6,14 +6,16 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/post");
 }
 
-// Set the time for calendar
-$getNow = date("Y-m-d H:i:s"); // Stores the current time & date so that the Rome.js Calendar knows what your current time (and so that people can't schedule posts in the past)
-$getMax =  date("Y-m-d H:i:s", time() + (3600 * 24 * 60)); // Stores the maximum calendar date (6 Months)
+// Stores the current time & date so that the Rome.js Calendar knows what your current time (and so that people can't schedule posts in the past)
+$getNow = date("Y-m-d H:i:s"); 
 
-// Prepare the Metadata
-Metadata::addFooter('<script src="' . CDN . '/scripts/rome.js"></script>'); // Including Rome.js
-Metadata::addHeader('<link rel="stylesheet" type="text/css" href="' . CDN . '/css/rome.css" />'); // Including the calendar style
-Metadata::addFooter('<script>rome(dt, { min: "' . $getNow . '" , max: "' . $getMax . '", inputFormat: "YYYY-MM-DD HH:mm:ss"})</script>'); // Initializing the Calendar (Rome.js)
+// Stores the maximum calendar date (2 Months)
+$getMax =  date("Y-m-d H:i:s", time() + (3600 * 24 * 60));
+
+// Prepare the "Rome" Calendar
+Metadata::addFooter('<script src="' . CDN . '/scripts/rome.js"></script>');
+Metadata::addHeader('<link rel="stylesheet" type="text/css" href="' . CDN . '/css/rome.css" />');
+Metadata::addFooter('<script>rome(dt, { min: "' . $getNow . '" , max: "' . $getMax . '", inputFormat: "YYYY-MM-DD HH:mm:ss"})</script>');
 
 // Set the active user to yourself
 You::$id = Me::$id;
@@ -56,7 +58,7 @@ if(Form::submitted("social-post-adv"))
 			
 			// Set the image directory
 			$srcData = Upload::fileBucketData(Me::$id, 10000);	// Change to an actual integer
-			$bucketDir = '/assets/images/' . $srcData['main_directory'] . '/' . $srcData['second_directory'];
+			$bucketDir = '/assets/photos/' . $srcData['main_directory'] . '/' . $srcData['second_directory'];
 			$imageDir = APP_PATH . $bucketDir;
 			
 			// Save the image to a chosen path
@@ -148,7 +150,7 @@ if(Form::submitted("social-post-adv"))
 		if(FormValidate::pass())
 		{
 			// Create the post
-			$postID = AppSocial::createPost(Me::$id, Me::$id, $attachmentID, $_POST['message'], "", strtotime($_POST['post_date']), $hashData);
+			$postID = AppSocial::createPost(Me::$id, Me::$id, $clearance, $attachmentID, $_POST['message'], "", strtotime($_POST['post_date']), $hashData);
 			
 			// Display Success
 			Alert::saveSuccess("Post Successful", "You have successfully posted to your wall!");

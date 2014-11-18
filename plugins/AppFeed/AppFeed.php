@@ -22,6 +22,11 @@ $lastFeedUpdate = AppFeed::lastUpdate($uniID);
 abstract class AppFeed {
 	
 	
+/****** Plugin Variables ******/
+	public static $postsToScan = 200;		// <int> The maximum number of posts to scan.
+	
+	
+	
 /****** Update The User's Feed ******/
 	public static function update
 	(
@@ -55,7 +60,7 @@ abstract class AppFeed {
 			// Then cycle through posts, determine post engagement
 			
 			// Get your friends (in order of engagement value)
-			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friends_list WHERE uni_id=? ORDER BY engage_value DESC LIMIT 500", array($uniID));
+			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friends_list WHERE uni_id=? ORDER BY engage_value DESC LIMIT 300", array($uniID));
 			
 			$friendCount = count($friends);
 			$limitScan = ($friendCount < 10 ? 5 : ($friendCount < 50 ? 4 : ($friendCount < 100 ? 3 : 2)));
@@ -63,7 +68,7 @@ abstract class AppFeed {
 			foreach($friends as $friend)
 			{
 				// Get the friends most recent posts
-				$posts = Database::selectMultiple("SELECT * FROM social_posts_user spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id'], (int) $friend['friend_id']));
+				$posts = Database::selectMultiple("SELECT * FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id'], (int) $friend['friend_id']));
 				
 				foreach($posts as $post)
 				{
@@ -86,10 +91,11 @@ abstract class AppFeed {
 					$postList[(int) $post['id']] = $postEngage;
 				}
 				
-				// If you've scanned more than 100 posts, end here
-				if($postsScanned++ >= 100) { break; }
+				// If you've scanned more than the maxmium allowed posts, end here
+				if($postsScanned++ >= self::$postsToScan) { break; }
 			}
 			
+			// Sort by the most engaging posts
 			arsort($postList);
 			
 			Database::startTransaction();

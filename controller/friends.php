@@ -6,25 +6,29 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/friends", "/");
 }
 
+// Get the social data
+$social = new AppSocial(Me::$id);
+
 // Prepare Values
 $currentPage = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
 $resultsPerPage = 30;
 
-// Total friend count
-$friendCount = AppFriends::getFriendCount(Me::$id);
-
 // Get the list of friends
-$friends = AppFriends::getList(Me::$id, $currentPage, $resultsPerPage);
+$friends = AppFriends::getFriendList(Me::$id, $currentPage, $resultsPerPage);
 
 // Get the list of friend requests
 $requests = AppFriends::getRequestList(Me::$id, 0, 4);
 
 // Prepare Values
-$fastchatURL = URL::fastchat_social();
+$socialURL = URL::unifaction_social();
 
 // Set the active user to yourself
 You::$id = Me::$id;
 You::$handle = Me::$vals['handle'];
+
+/****** Page Configuration ******/
+$config['canonical'] = "/friends";
+$config['pageTitle'] = "My Friends";		// Up to 70 characters. Use keywords.
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -69,7 +73,7 @@ if(count($requests) > 0)
 	{
 		array_pop($requests);
 		
-		$totalRequests = (int) Database::selectValue("SELECT COUNT(*) as totalNum FROM friend_requests WHERE uni_id=?", array(Me::$id));
+		$totalRequests = (int) Database::selectValue("SELECT COUNT(*) as totalNum FROM friends_requests WHERE uni_id=?", array(Me::$id));
 		
 		echo '
 		<div style="margin-bottom:22px;"><a href="/friends/requests">View your full list of <span style="background-color:#ffcccc; padding:4px; border-radius:4px;">' . $totalRequests . ' friend requests</span>.</a></div>';
@@ -82,7 +86,7 @@ if(count($requests) > 0)
 		<div class="friend-block">
 			<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['friend_id'], "medium") . '" /></a>
 			<br />' . $request['display_name'] . '
-			<br /><a href="' . $fastchatURL . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
+			<br /><a href="' . $socialURL . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 			<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
 			<br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
 		</div>';
@@ -102,9 +106,9 @@ if(count($friends) > 0)
 	{
 		echo '
 		<div class="friend-block">
-			<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image((int) $friend['friend_id'], "large") . '" /></a>
+			<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image((int) $friend['uni_id'], "large") . '" /></a>
 			<br />' . $friend['display_name'] . '
-			<br /><a href="' . $fastchatURL . '/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
+			<br /><a href="' . $socialURL . '/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
 			<br /><br /><a href="/friends/edit?handle=' . $friend['handle'] . '"><span class="icon-pencil"></span> Edit</a>
 		</div>';
 	}
@@ -115,7 +119,7 @@ else
 }
 
 // Prepare the pagination
-$page = new Pagination($friendCount, $resultsPerPage, $currentPage);
+$page = new Pagination((int) $social->data['friends'], $resultsPerPage, $currentPage);
 
 if($page->highestPage > 1)
 {

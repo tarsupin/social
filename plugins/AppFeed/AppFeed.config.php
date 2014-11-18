@@ -31,7 +31,7 @@ class AppFeed_config {
 			`post_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
 			INDEX (`uni_id`, `engage_value`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 11;
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 31;
 		");
 		
 		Database::exec("

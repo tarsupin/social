@@ -76,6 +76,3 @@ else if(ENVIRONMENT == "local") {
 	$config['site-domain'] = "social.test";
 	$config['admin-email'] = "info@unifaction.test";
 }
-
-// Base style sheet for this site
-Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-2col.css" />');

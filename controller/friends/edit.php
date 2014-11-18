@@ -80,7 +80,7 @@ echo '
 	<p>
 		<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($friend['uni_id'], "large") . '" /></a>
 		<br /><a href="' . URL::unifaction_social() . '">' . $friend['display_name'] . '</a>
-		<br /><a href="' . URL::fastchat_social() . '">@' . $friend['handle'] . '</a>
+		<br /><a href="' . URL::unifaction_social() . '">@' . $friend['handle'] . '</a>
 		
 		<div>
 			View Permissions:<br /><select name="view_clearance">' . str_replace('value="' . $viewClearance . '"', 'value="' . $viewClearance . '" selected', '

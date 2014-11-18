@@ -76,178 +76,179 @@ AppFriends::deny($uniID, $friendID);
 abstract class AppFriends {
 	
 	
-/****** Check if the target ID is a friend ******/
-	public static function isFriend
-	(
-		$uniID			// <int> The UniID of the user.
-	,	$targetID		// <int> The UniID of the target to check if a friend.
-	)					// RETURNS <bool> TRUE if target is a friend, FALSE if not.
-	
-	// AppFriends::isFriend($uniID, $targetID);
-	{
-		return Database::selectValue("SELECT friend_id FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $targetID)) ? true : false;
-	}
-	
-	
-/****** Get the total count of friends of a user ******/
-	public static function getFriendCount
-	(
-		$uniID					// <int> The UniID of the user to find friends of.
-	)							// RETURNS <int> the total friend count of a user.
-	
-	// $friendCount = AppFriends::getFriendCount($uniID);
-	{
-		return (int) Database::selectValue("SELECT COUNT(*) as totalNum FROM friends_list WHERE uni_id=? LIMIT 1", array($uniID));
-	}
-	
-	
-/****** Get the list of friends of a user ******/
-	public static function getList
-	(
-		$uniID					// <int> The UniID of the user to find friends of.
-	,	$page = 1				// <int> The row number to start at.
-	,	$numRows = 20			// <int> The number of rows to return.
-	,	$byEngagement = false	// <bool> Sort the list by engagement value.
-	)							// RETURNS <int:[str:mixed]> the list of friends, array() on failure.
-	
-	// $friends = AppFriends::getList($uniID, [$page], [$numRows], [$byEngagement]);
-	{
-		return Database::selectMultiple("SELECT f.friend_id, u.display_name, u.handle FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID));
-	}
-	
-	
-/****** Check if a user has already requested friendship with another user ******/
-	public static function getRequest
-	(
-		$uniID			// <int> The UniID of the user.
-	,	$friendID		// <int> The UniID of the friend.
-	)					// RETURNS <str:int> the clearance levels of the request, array() if there is no request.
-	
-	// $clearance = AppFriends::getRequest($uniID, $friendID);
-	{
-		if(!$request = Database::selectOne("SELECT view_clearance, interact_clearance FROM friend_requests WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID)))
-		{
-			return array();
-		}
-		
-		// Recognize Integers
-		$request['view_clearance'] = (int) $request['view_clearance'];
-		$request['interact_clearance'] = (int) $request['interact_clearance'];
-		
-		return $request;
-	}
-	
-	
-/****** Get a list of a user's friend requests ******/
-	public static function getRequestList
-	(
-		$uniID			// <int> The UniID of the user to find friend requests of.
-	,	$startPos = 0	// <int> The row number to start at.
-	,	$limit = 20		// <int> The number of rows to return.
-	)					// RETURNS <int:[str:mixed]> the list containing friend requests.
-	
-	// $requests = AppFriends::getRequestList($uniID, [$startPos], [$limit]);
-	{
-		return Database::selectMultiple("SELECT f.friend_id, f.view_clearance, f.interact_clearance, u.display_name, u.handle FROM friend_requests f INNER JOIN users u ON f.friend_id = u.uni_id WHERE f.uni_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
-	}
-	
-	
-/****** Get a list of a user's sent friend requests ******/
-	public static function getRequestSentList
-	(
-		$uniID			// <int> The UniID of the user to find friend requests they sent.
-	,	$startPos = 0	// <int> The row number to start at.
-	,	$limit = 20		// <int> The number of rows to return.
-	)					// RETURNS <int:[str:mixed]> the list containing friend requests.
-	
-	// $requestsSent = AppFriends::getRequestSentList($uniID, [$startPos], [$limit]);
-	{
-		return Database::selectMultiple("SELECT f.uni_id, f.view_clearance, f.interact_clearance, u.display_name, u.handle FROM friend_requests f INNER JOIN users u ON f.uni_id = u.uni_id WHERE f.friend_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
-	}
-	
-	
-/****** Check what clearance levels a user has permitted a friend ******/
+/****** Get the clearance level of a friend ******/
 	public static function getClearance
 	(
-		$uniID					// <int> The UniID of the user to check the role of.
-	,	$friendID				// <int> The UniID of the friend.
-	)							// RETURNS <int:int> the friend's clearance levels, FALSE on failure.
+		$uniID			// <int> The UniID of the main user.
+	,	$friendID		// <int> The UniID of the friend to check the clearance of.
+	)					// RETURNS <int> the friend's clearance level, 0 on failure.
 	
 	// $clearance = AppFriends::getClearance($uniID, $friendID);
 	{
-		if(!$request = Database::selectOne("SELECT view_clearance, interact_clearance FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
-		{
-			return array(0, 0);
-		}
-		
-		return array((int) $request['view_clearance'], (int) $request['interact_clearance']);
+		return (int) Database::selectValue("SELECT clearance FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID));
 	}
 	
 	
 /****** Set a relationship with a friend ******/
 	public static function setClearance
 	(
-		$uniID					// <int> The User's UniID.
-	,	$friendID				// <int> The Friend's UniID (or person requesting to be a friend, if need approval).
-	,	$viewClearance 			// <int> The level of view clearance being set.
-	,	$interactClearance		// <int> The level of interaction clearance being set.
-	)							// RETURNS <bool> TRUE if the clearance was set properly, FALSE on failure.
+		$uniID			// <int> The User's UniID.
+	,	$friendID		// <int> The Friend's UniID.
+	,	$clearance 		// <int> The level of clearance being set.
+	)					// RETURNS <bool> TRUE if the clearance was set properly, FALSE on failure.
 	
-	// AppFriends::setClearance($uniID, $friendID, $viewClearance, $interactClearance);
+	// AppFriends::setClearance($uniID, $friendID, $clearance);
 	{
-		// If approval isn't needed, update the current friend settings
-		return Database::query("REPLACE INTO friends_list (uni_id, friend_id, view_clearance, interact_clearance) VALUES (?, ?, ?, ?)", array($uniID, $friendID, $viewClearance, $interactClearance));
+		return Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($uniID, $friendID, $clearance));
 	}
 	
 	
-/****** Send a friend request ******/
-	public static function sendRequest
+/****** Follow a User ******/
+	public static function follow
 	(
-		$uniID					// <int> The UniID that is requesting the friendship.
-	,	$friendID				// <int> The Friend's UniID.
-	,	$viewClearance = 5 		// <int> The level of view clearance being set.
-	,	$interactClearance = 5	// <int> The level of interaction clearance being set.
-	)							// RETURNS <bool> TRUE if the request was sent properly, FALSE on failure.
+		$uniID			// <int> The UniID that's going to follow someone.
+	,	$friendID		// <int> The UniID to follow.
+	)					// RETURNS <bool> TRUE on success, FALSE on failure.
 	
-	// AppFriends::sendRequest($uniID, $friendID, [$viewClearance], [$interactClearance]);
+	// AppFriends::follow($uniID, $friendID);
 	{
-		// Check if the request already exists
-		if($check = self::getRequest($friendID, $uniID))
+		// Get your clearance level with the target friend
+		$myClearance = AppFriends::getClearance($uniID, $friendID);
+		
+		// Check if you're already following that person
+		if($myClearance >= 1 and $myClearance != 2)
 		{
-			Database::query("REPLACE INTO friend_requests (uni_id, friend_id, view_clearance, interact_clearance) VALUES (?, ?, ?, ?)", array($friendID, $uniID, $viewClearance, $interactClearance));
-			
 			return true;
 		}
 		
-		// Attempt to add the friend request
-		if(!$check = Database::query("INSERT IGNORE INTO friend_requests (uni_id, friend_id, view_clearance, interact_clearance) VALUES (?, ?, ?, ?)", array($friendID, $uniID, $viewClearance, $interactClearance)))
+		// Get the friend's clearance of you
+		$friendClearance = AppFriends::getClearance($friendID, $uniID);
+		
+		// Begin the transaction
+		$pass = true;
+		
+		Database::startTransaction();
+		
+		// Set the friend's entry
+		if(!$friendClearance)
 		{
-			return false;
+			if($pass = Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($friendID, $uniID, 2)))
+			{
+				$pass = Database::query("UPDATE social_data SET followers=followers+1 WHERE uni_id=? LIMIT 1", array($friendID));
+			}
+		}
+		else
+		{
+			// Set the new friend clearance level
+			$nfc = max(3, $friendClearance);
+			
+			$pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array($nfc, $friendID, $uniID));
 		}
 		
-		// Notify the friend that there is a friend request
-		$userData = User::get($uniID, "handle, display_name");
+		if(!$pass) { return Database::endTransaction(false); }
 		
-		Notifications::create($friendID, URL::unifaction_social() . "/friends", "@" . $userData['handle'] . " has sent you a friend request.");
+		// Set the user's entry
+		if(!$myClearance)
+		{
+			if($pass = Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($uniID, $friendID, 1)))
+			{
+				$pass = Database::query("UPDATE social_data SET following=following+1 WHERE uni_id=? LIMIT 1", array($uniID));
+			}
+		}
+		else
+		{
+			// Set the new clearance level
+			$nc = max(3, $myClearance);
+			
+			$pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array($nc, $uniID, $friendID));
+		}
 		
-		return true;
+		return Database::endTransaction($pass);
 	}
 	
 	
-/****** Delete a friend ******/
-	public static function delete
+/****** Unfollow a User ******/
+	public static function unfollow
 	(
-		$uniID					// <int> The User's UniID.
-	,	$friendID				// <int> The Friend's UniID.
-	)							// RETURNS <bool> TRUE if the friend was deleted, FALSE on failure.
+		$uniID			// <int> The UniID that's going to unfollow someone.
+	,	$friendID		// <int> The UniID to unfollow.
+	)					// RETURNS <bool> TRUE on success, FALSE on failure.
 	
-	// AppFriends::delete($uniID, $friendID);
+	// AppFriends::unfollow($uniID, $friendID);
 	{
+		// Get your clearance level with the target friend
+		$myClearance = AppFriends::getClearance($uniID, $friendID);
+		
+		// Make sure you're actually following that person
+		if(!$myClearance or $myClearance == 2)
+		{
+			return true;
+		}
+		
+		// Begin the transaction
+		$pass = true;
+		
 		Database::startTransaction();
 		
-		if($pass = Database::query("DELETE IGNORE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
+		// Remove the friend's entry (if applicable)
+		if(!$pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID)))
 		{
-			$pass = Database::query("DELETE IGNORE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID));
+			$pass = Database::query("UPDATE social_data SET followers=followers-1 WHERE uni_id=? LIMIT 1", array($friendID));
+		}
+		
+		if(!$pass) { return Database::endTransaction(false); }
+		
+		// Remove the user's entry
+		if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
+		{
+			$pass = Database::query("UPDATE social_data SET following=following-1 WHERE uni_id=? LIMIT 1", array($uniID));
+		}
+		
+		return Database::endTransaction($pass);
+	}
+	
+	
+/****** Unfriend a User ******/
+	public static function unfriend
+	(
+		$uniID			// <int> The UniID that's going to unfriend someone.
+	,	$friendID		// <int> The UniID to unfriend.
+	)					// RETURNS <bool> TRUE on success, FALSE on failure.
+	
+	// AppFriends::unfriend($uniID, $friendID);
+	{
+		// Get your clearance level with the target friend
+		$myClearance = AppFriends::getClearance($uniID, $friendID);
+		
+		// Make sure you're actually friends with that person
+		if($myClearance < 4)
+		{
+			return true;
+		}
+		
+		// Get the friend's clearance of you
+		$friendClearance = AppFriends::getClearance($friendID, $uniID);
+		
+		// Begin the transaction
+		$pass = true;
+		
+		Database::startTransaction();
+		
+		// Update the friend's entry
+		if($friendClearance >= 4)
+		{
+			if(!$pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array(3, $friendID, $uniID)))
+			{
+				$pass = Database::query("UPDATE social_data SET friends=friends-1 WHERE uni_id=? LIMIT 1", array($friendID));
+			}
+		}
+		
+		if(!$pass) { return Database::endTransaction(false); }
+		
+		// Update the user's entry
+		if($pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array(3, $uniID, $friendID)))
+		{
+			$pass = Database::query("UPDATE social_data SET friends=friends-1 WHERE uni_id=? LIMIT 1", array($uniID));
 		}
 		
 		if($pass)
@@ -266,6 +267,133 @@ abstract class AppFriends {
 	}
 	
 	
+/****** Get the list of followers of a user ******/
+	public static function getFollowerList
+	(
+		$uniID					// <int> The UniID of the user to find followers of.
+	,	$page = 1				// <int> The row number to start at.
+	,	$numRows = 20			// <int> The number of rows to return.
+	,	$byEngagement = false	// <bool> Sort the list by engagement value.
+	)							// RETURNS <int:[str:mixed]> the list of followers, array() on failure.
+	
+	// $followers = AppFriends::getFollowerList($uniID, [$page], [$numRows], [$byEngagement]);
+	{
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?)" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3));
+	}
+	
+	
+/****** Get the list of people the user is following ******/
+	public static function getFollowingList
+	(
+		$uniID					// <int> The UniID of the user to find followers of.
+	,	$page = 1				// <int> The row number to start at.
+	,	$numRows = 20			// <int> The number of rows to return.
+	,	$byEngagement = false	// <bool> Sort the list by engagement value.
+	)							// RETURNS <int:[str:mixed]> the list of followers, array() on failure.
+	
+	// $followers = AppFriends::getFollowingList($uniID, [$page], [$numRows], [$byEngagement]);
+	{
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?) " . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 1, 3));
+	}
+	
+	
+/****** Get the list of a user's friends ******/
+	public static function getFriendList
+	(
+		$uniID					// <int> The UniID of the user to find friends of.
+	,	$page = 1				// <int> The row number to start at.
+	,	$numRows = 20			// <int> The number of rows to return.
+	,	$byEngagement = false	// <bool> Sort the list by engagement value.
+	)							// RETURNS <int:[str:mixed]> the list of friends, array() on failure.
+	
+	// $friends = AppFriends::getFriendList($uniID, [$page], [$numRows], [$byEngagement]);
+	{
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance >= ?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4));
+	}
+	
+	
+/****** Check if UniID has already requested friendship with FriendID (the receiver of the request) ******/
+	public static function getRequest
+	(
+		$uniID			// <int> The UniID of the user.
+	,	$friendID		// <int> The UniID of the friend.
+	)					// RETURNS <bool> TRUE if there was a request, FALSE if not
+	
+	// AppFriends::getRequest($uniID, $friendID);
+	{
+		return (bool) Database::selectOne("SELECT friend_id FROM friends_requests WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID));
+	}
+	
+	
+/****** Get a list of a user's friend requests ******/
+	public static function getRequestList
+	(
+		$uniID			// <int> The UniID of the user to find friend requests of.
+	,	$startPos = 0	// <int> The row number to start at.
+	,	$limit = 20		// <int> The number of rows to return.
+	)					// RETURNS <int:[str:mixed]> the list containing friend requests.
+	
+	// $requests = AppFriends::getRequestList($uniID, [$startPos], [$limit]);
+	{
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_requests f INNER JOIN users u ON f.friend_id = u.uni_id WHERE f.uni_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
+	}
+	
+	
+/****** Get a list of a user's sent friend requests ******/
+	public static function getRequestSentList
+	(
+		$uniID			// <int> The UniID of the user to find friend requests they sent.
+	,	$startPos = 0	// <int> The row number to start at.
+	,	$limit = 20		// <int> The number of rows to return.
+	)					// RETURNS <int:[str:mixed]> the list containing friend requests.
+	
+	// $requestsSent = AppFriends::getRequestSentList($uniID, [$startPos], [$limit]);
+	{
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_requests f INNER JOIN users u ON f.uni_id = u.uni_id WHERE f.friend_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
+	}
+	
+	
+/****** Send a friend request ******/
+	public static function sendRequest
+	(
+		$uniID		// <int> The UniID that is requesting the friendship.
+	,	$friendID	// <int> The Friend's UniID.
+	)				// RETURNS <bool> TRUE if the request was sent properly, FALSE on failure.
+	
+	// AppFriends::sendRequest($uniID, $friendID);
+	{
+		// To send a request, you must be following the user
+		AppFriends::follow($uniID, $friendID);
+		
+		// Make sure you're not already a friend
+		$clearance = AppFriends::getClearance($uniID, $friendID);
+		
+		if($clearance >= 4)
+		{
+			return true;
+		}
+		
+		// Check if the user has already sent a request
+		if($check = self::getRequest($friendID, $uniID))
+		{
+			return true;
+		}
+		
+		// Attempt to add the friend request
+		if(!$check = Database::query("REPLACE INTO friends_requests (uni_id, friend_id, date_requested) VALUES (?, ?, ?)", array($friendID, $uniID, time())))
+		{
+			return false;
+		}
+		
+		// Notify the friend that there is a friend request
+		$userData = User::get($uniID, "handle, display_name");
+		
+		Notifications::create($friendID, URL::unifaction_social() . "/friends", "@" . $userData['handle'] . " has sent you a friend request.");
+		
+		return true;
+	}
+	
+	
 /****** Approve a Friend Request ******/
 	public static function approve
 	(
@@ -275,6 +403,7 @@ abstract class AppFriends {
 	
 	// AppFriends::approve($uniID, $friendID);
 	{
+		// Make sure a request was actually provided
 		if(!$request = self::getRequest($friendID, $uniID))
 		{
 			return false;
@@ -283,12 +412,16 @@ abstract class AppFriends {
 		Database::startTransaction();
 		
 		// Delete Friend Request
-		if($pass = Database::query("DELETE FROM friend_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID)))
+		if($pass = Database::query("DELETE FROM friends_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID)))
 		{
-			// Insert or Update the Friend List
-			if($pass = Database::query("INSERT IGNORE INTO friends_list (uni_id, friend_id, view_clearance, interact_clearance) VALUES (?, ?, ?, ?)", array($uniID, $friendID, $request['view_clearance'], $request['interact_clearance'])))
+			// Update the Friend List
+			if($pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=?", array(4, $uniID, $friendID)))
 			{
-				$pass = Database::query("INSERT IGNORE INTO friends_list (uni_id, friend_id, view_clearance, interact_clearance) VALUES (?, ?, ?, ?)", array($friendID, $uniID, $request['view_clearance'], $request['interact_clearance']));
+				if($pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=?", array(4, $friendID, $uniID)))
+				{
+					// Update the social data
+					$pass = Database::query("UPDATE social_data SET friends=friends+1 WHERE uni_id=? OR uni_id=?", array($uniID, $friendID));
+				}
 			}
 		}
 		
@@ -330,7 +463,7 @@ abstract class AppFriends {
 	
 	// AppFriends::deny($uniID, $friendID);
 	{
-		return Database::query("DELETE FROM friend_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID));
+		return Database::query("DELETE FROM friends_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID));
 	}
 	
 	
@@ -381,8 +514,11 @@ abstract class AppFriends {
 	
 	// self::updateEngagement($uniID, $friendID)
 	{
-		// End if the user is not a friend
-		if(!self::isFriend($uniID, $friendID)) { return false; }
+		// End if the user is not a friend or follower
+		if(!$clearance = AppFriends::getClearance($uniID, $friendID))
+		{
+			return false;
+		}
 		
 		// Retrieve the user's engagement levels over the past few cycles
 		$total = 0;

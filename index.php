@@ -12,6 +12,16 @@ Me::$getColumns = "uni_id, handle, clearance, role, display_name";
 
 Me::initialize();
 
+if(isset($_GET['u6access']))
+{
+	$_SESSION['u6access'] = true;
+}
+
+if(!isset($_SESSION['u6access']))
+{
+	die("This site is currently being updated.");
+}
+
 // Determine which page you should point to, then load it
 require(SYS_PATH . "/routes.php");
 
@@ -21,7 +31,9 @@ if($url[0] != '')
 {
 	if(!$userData = User::getDataByHandle($url[0], "uni_id, display_name, handle"))
 	{
-		$userData = User::silentRegister($url[0]);
+		User::silentRegister($url[0]);
+		
+		$userData = User::getDataByHandle($url[0], "uni_id, display_name, handle");
 	}
 	
 	if($userData)
@@ -31,7 +43,7 @@ if($url[0] != '')
 		You::$name = $userData['display_name'];
 		You::$handle = $userData['handle'];
 		
-		require(APP_PATH . '/controller/social.php'); exit;
+		require(APP_PATH . '/controller/social-page.php'); exit;
 	}
 }
 //*/

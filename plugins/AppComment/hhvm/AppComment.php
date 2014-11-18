@@ -27,14 +27,29 @@ abstract class AppComment {
 	public static function getList
 	(
 		int $postID				// <int> The ID of the post.
-	,	int $startNum = 0		// <int> The starting number to get comments from.
+	,	int $page = 1			// <int> The starting number to get comments from.
 	,	int $showNum = 10		// <int> The number of comments to return.
 	,	string $order = "ASC"		// <str> The direction to sort by "ASC" or "DESC"
 	): array <int, array<str, mixed>>						// RETURNS <int:[str:mixed]> comments for the object, FALSE on failure.
 	
 	// $comments = AppComment::getList($postID, $startNum, $showNum, "DESC");
 	{
-		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . ($startNum + 0) . ", " . ($showNum + 0), array($postID));
+		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 0), array($postID));
+	}
+	
+	
+/****** Get Comments of a Post through AJAX ******/
+	public static function getListAJAX
+	(
+		int $postID				// <int> The ID of the post.
+	,	int $page = 1			// <int> The starting number to get comments from.
+	,	int $showNum = 10		// <int> The number of comments to return.
+	,	string $order = "ASC"		// <str> The direction to sort by "ASC" or "DESC"
+	): array <int, array<str, mixed>>						// RETURNS <int:[str:mixed]> comments for the object, FALSE on failure.
+	
+	// $comments = AppComment::getListAJAX($postID, $startNum, $showNum, "DESC");
+	{
+		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted, u.handle, u.display_name FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id INNER JOIN users u ON c.uni_id=u.uni_id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 0), array($postID));
 	}
 	
 	
@@ -46,9 +61,10 @@ abstract class AppComment {
 	,	string $comment				// <str> The comment to post.
 	,	string $link = ""				// <str> The link to this particular comment.
 	,	int $toUniID = 0			// <int> The UniID of the target being commented to.
+	,	bool $isPublic = true			// <bool> TRUE if this is a public post.
 	): int							// RETURNS <int> ID of the new comment, 0 if failed.
 	
-	// $commentID = AppComment::create($postID, $uniID, "Wow! Awesome!", $linkToComment, $toUniID);
+	// $commentID = AppComment::create($postID, $uniID, "Wow! Awesome!", $linkToComment, $toUniID, [$isPublic]);
 	{
 		Database::startTransaction();
 		
@@ -69,8 +85,11 @@ abstract class AppComment {
 		
 		if(Database::endTransaction($pass))
 		{
-			// Process the Comment (Hashtag, Credits, Notifications, etc)
-			Comment::process($uniID, $comment, $link, $toUniID);
+			if($isPublic)
+			{
+				// Process the Comment (Hashtag, Credits, Notifications, etc)
+				Comment::process($uniID, $comment, $link, $toUniID);
+			}
 			
 			return $commentID;
 		}

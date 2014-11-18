@@ -7,9 +7,9 @@ if(!Me::$loggedIn)
 }
 
 // Run the page data
-if(!$socialPage = AppSocial::getPage(Me::$id))
+if(!$social = new AppSocial(Me::$id))
 {
-	header("Location: /"); exit;
+	Me::redirectLogin("/");
 }
 
 // Check if the form is submitted
@@ -29,7 +29,7 @@ if(Form::submitted("upl-social-header"))
 		
 		// Set the image directory
 		$urlPath = AppSocial::headerPhoto(Me::$id, Me::$vals['handle']);
-		$bucketDir = $urlPath['imageDir'] . '/' . $urlPath['mainDir'] . '/' . $urlPath['secondDir'];
+		$bucketDir = $urlPath['imageDir'] . '/' . $urlPath['mainDir'];
 		$imageDir = APP_PATH . $bucketDir;
 		
 		// Save the image to a chosen path
@@ -46,7 +46,7 @@ if(Form::submitted("upl-social-header"))
 				$image->save($imageDir . "/" . $imageUpload->filename . ".jpg");
 				
 				// Set the user as having a header photo
-				Database::query("UPDATE social_page SET has_headerPhoto=? WHERE uni_id=? LIMIT 1", array(1, Me::$id));
+				Database::query("UPDATE social_data SET has_headerPhoto=? WHERE uni_id=? LIMIT 1", array(1, Me::$id));
 				
 				Alert::success("Header Photo", "You have uploaded a header photo to your profile.");
 			}
@@ -54,12 +54,12 @@ if(Form::submitted("upl-social-header"))
 	}
 	
 	// Prepare Values
-	$socialPage['perm_post'] = isset($_POST['post']) ? (int) $_POST['post'] : $socialPage['perm_post'];
-	$socialPage['perm_access'] = isset($_POST['access']) ? (int) $_POST['access'] : $socialPage['perm_access'];
-	$socialPage['perm_comment'] = isset($_POST['comment']) ? (int) $_POST['comment'] : $socialPage['perm_comment'];
+	$social->data['perm_access'] = isset($_POST['access']) ? (int) $_POST['access'] : $socialPage['perm_access'];
+	$social->data['perm_post'] = isset($_POST['post']) ? (int) $_POST['post'] : $socialPage['perm_post'];
+	$social->data['perm_comment'] = isset($_POST['comment']) ? (int) $_POST['comment'] : $socialPage['perm_comment'];
 	
 	// Update the page settings
-	Database::query("UPDATE social_page SET perm_access=?, perm_post=?, perm_comment=? WHERE uni_id=? LIMIT 1", array($socialPage['perm_access'], $socialPage['perm_post'], $socialPage['perm_comment'], Me::$id));
+	Database::query("UPDATE social_data SET perm_access=?, perm_post=?, perm_comment=? WHERE uni_id=? LIMIT 1", array($social->data['perm_access'], $social->data['perm_post'], $social->data['perm_comment'], Me::$id));
 	
 	Alert::success("Settings Updated", "Your page settings have been updated.");
 }
@@ -94,26 +94,27 @@ echo '
 	
 	<p>
 		<strong>Who is allowed to view my page?</strong><br />
-		<select name="access">' . str_replace('value="' . $socialPage['perm_access'] . '"', 'value="' . $socialPage['perm_access'] . '" selected', '
-			<option value="9">Only I can view my page</option>
-			<option value="5">Only my friends can view my page</option>
+		<select name="access">' . str_replace('value="' . $social->data['perm_access'] . '"', 'value="' . $social->data['perm_access'] . '" selected', '
+			<option value="8">Only I can view my page</option>
+			<option value="4">Only my friends can view my page</option>
 			<option value="0">Guests are allowed to view my page - it\'s public</option>') . '
 		</select>
 	</p>
 	
 	<p>
 		<strong>Who is allowed to post on my page?</strong><br />
-		<select name="post">' . str_replace('value="' . $socialPage['perm_post'] . '"', 'value="' . $socialPage['perm_post'] . '" selected', '
-			<option value="9">Only I can post</option>
-			<option value="5">Only my friends can post</option>') . '
+		<select name="post">' . str_replace('value="' . $social->data['perm_post'] . '"', 'value="' . $social->data['perm_post'] . '" selected', '
+			<option value="8">Only I can post</option>
+			<option value="4">Only my friends can post</option>
+			<option value="0">Guests can post</option>') . '
 		</select>
 	</p>
 	
 	<p>
 		<strong>Who is allowed to comment on my page?</strong><br />
-		<select name="comment">' . str_replace('value="' . $socialPage['perm_comment'] . '"', 'value="' . $socialPage['perm_comment'] . '" selected', '
-			<option value="9">Only I can comment on my page</option>
-			<option value="5">Only my friends can comment on my page</option>
+		<select name="comment">' . str_replace('value="' . $social->data['perm_comment'] . '"', 'value="' . $social->data['perm_comment'] . '" selected', '
+			<option value="8">Only I can comment on my page</option>
+			<option value="4">Only my friends can comment on my page</option>
 			<option value="0">Guests are allowed to comment on my page</option>') . '
 		</select>
 	</p>

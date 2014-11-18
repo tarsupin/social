@@ -32,7 +32,7 @@ class AppComment_config {
 			`date_posted`			int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
 			PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(id) PARTITIONS 31;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(id) PARTITIONS 61;
 		");
 		
 		Database::exec("
@@ -41,8 +41,8 @@ class AppComment_config {
 			`post_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`id`					int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
-			INDEX (`post_id`, `id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(post_id) PARTITIONS 31;
+			UNIQUE (`post_id`, `id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(post_id) PARTITIONS 61;
 		");
 		
 		return $this->isInstalled();

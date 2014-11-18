@@ -97,7 +97,7 @@ class PublishAPI extends API {
 			$attachmentID = $attachment->id;
 			
 			// Create the post
-			if($postID = AppSocial::createPost($uniID, $posterID, $attachmentID, "", $source, 0))
+			if($postID = AppSocial::createPost($uniID, $posterID, 0, $attachmentID, "", $source, 0))
 			{
 				return true;
 			}
@@ -131,7 +131,7 @@ class PublishAPI extends API {
 			$attachmentID = $attachment->id;
 			
 			// Create the post
-			if($postID = AppSocial::createPost($uniID, $posterID, $attachmentID, "", $source, 0))
+			if($postID = AppSocial::createPost($uniID, $posterID, 0, $attachmentID, "", $source, 0))
 			{
 				return true;
 			}
@@ -140,7 +140,7 @@ class PublishAPI extends API {
 		// If we're publishing a message
 		else if($type == "comment")
 		{
-			if(AppSocial::createPost($uniID, $posterID, 0, $description))
+			if(AppSocial::createPost($uniID, $posterID, 0, 0, $description))
 			{
 				return true;
 			}
@@ -165,7 +165,7 @@ class PublishAPI extends API {
 			$attachmentID = $attachment->id;
 			
 			// Create the post
-			if(AppSocial::createPost($uniID, $posterID, $attachmentID, "", $source, 0))
+			if(AppSocial::createPost($uniID, $posterID, 0, $attachmentID, "", $source, 0))
 			{
 				return true;
 			}
