@@ -58,7 +58,9 @@ if(Form::submitted("send-req-uf"))
 	}
 	
 	// Check if you're already friends with the user
-	if(!AppFriends::isFriend(Me::$id, $friendData['uni_id']))
+	$clearance = AppFriends::getClearance(Me::$id, $friendData['uni_id']);
+	
+	if($clearance < 4)
 	{
 		// Create the Friend Request
 		AppFriends::sendRequest(Me::$id, $friendData['uni_id']);

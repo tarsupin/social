@@ -84,7 +84,7 @@ if(count($requests) > 0)
 	{
 		echo '
 		<div class="friend-block">
-			<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['friend_id'], "medium") . '" /></a>
+			<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 			<br />' . $request['display_name'] . '
 			<br /><a href="' . $socialURL . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 			<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>

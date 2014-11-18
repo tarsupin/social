@@ -54,13 +54,13 @@ abstract class AppFeed {
 			$postsScanned = 0;
 			
 			// Set the last update to now
-			Database::query("REPLACE INTO `social_feed_last_update` (uni_id, date_lastUpdate) VALUES (?, ?)", array($uniID, $timestamp));
+			Database::query("UPDATE `social_data` SET last_feed_update=? WHERE uni_id=? LIMIT 1", array($timestamp, $uniID));
 			
 			// Cycle through friends, favored by friend engagement and recent activity
 			// Then cycle through posts, determine post engagement
 			
 			// Get your friends (in order of engagement value)
-			$friends = Database::selectMultiple("SELECT friend_id, engage_value FROM friends_list WHERE uni_id=? ORDER BY engage_value DESC LIMIT 300", array($uniID));
+			$friends = Database::selectMultiple("SELECT friend_id, clearance, engage_value FROM friends_list WHERE uni_id=? ORDER BY engage_value DESC LIMIT 300", array($uniID));
 			
 			$friendCount = count($friends);
 			$limitScan = ($friendCount < 10 ? 5 : ($friendCount < 50 ? 4 : ($friendCount < 100 ? 3 : 2)));
@@ -68,7 +68,7 @@ abstract class AppFeed {
 			foreach($friends as $friend)
 			{
 				// Get the friends most recent posts
-				$posts = Database::selectMultiple("SELECT * FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id'], (int) $friend['friend_id']));
+				$posts = Database::selectMultiple("SELECT * FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? AND sp.clearance <= ? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id'], (int) $friend['friend_id'], $friend['clearance']));
 				
 				foreach($posts as $post)
 				{
@@ -122,7 +122,7 @@ abstract class AppFeed {
 	
 	// $posts = AppFeed::get($uniID);
 	{
-		return Database::selectMultiple("SELECT p.*, u.display_name FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY engage_value DESC", array($uniID));
+		return Database::selectMultiple("SELECT p.*, u.handle, u.display_name FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY engage_value DESC", array($uniID));
 	}
 	
 	
@@ -134,6 +134,6 @@ abstract class AppFeed {
 	
 	// $lastUpdate = AppFeed::lastUpdate($uniID);
 	{
-		return (int) Database::selectValue("SELECT date_lastUpdate FROM social_feed_last_update WHERE uni_id=? LIMIT 1", array($uniID));
+		return (int) Database::selectValue("SELECT last_feed_update FROM social_data WHERE uni_id=? LIMIT 1", array($uniID));
 	}
 }

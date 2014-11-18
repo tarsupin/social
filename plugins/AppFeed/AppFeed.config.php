@@ -34,16 +34,6 @@ class AppFeed_config {
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 31;
 		");
 		
-		Database::exec("
-		CREATE TABLE IF NOT EXISTS `social_feed_last_update`
-		(
-			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
-			`date_lastUpdate`		int(10)			unsigned	NOT NULL	DEFAULT '0',
-			
-			UNIQUE (`uni_id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 7;
-		");
-		
 		return $this->isInstalled();
 	}
 	
@@ -56,9 +46,8 @@ class AppFeed_config {
 	{
 		// Make sure the newly installed tables exist
 		$pass1 = DatabaseAdmin::columnsExist("social_feed", array("uni_id", "post_id"));
-		$pass2 = DatabaseAdmin::columnsExist("social_feed_last_update", array("uni_id", "date_lastUpdate"));
 		
-		return ($pass1 and $pass2);
+		return ($pass1);
 	}
 	
 }

@@ -36,11 +36,13 @@ else
 require(SYS_PATH . "/controller/includes/social-menu.php");
 
 // UniFaction Dropdown Menu
+$handle = Me::$loggedIn ? Me::$vals['handle'] : '';
+
 WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap hide-600">
 	<ul class="menu">
 		' . (isset($uniMenu) ? $uniMenu : '') . '
-		<li class="menu-slot' . ($url[0] == Me::$vals['handle'] ? " menu-active" : "") . '"><a href="/' . Me::$vals['handle'] . '">My Wall</a>
+		<li class="menu-slot' . ($url[0] == $handle ? " menu-active" : "") . '"><a href="/' . $handle . '">My Wall</a>
 		</li><li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
 		</li><li class="menu-slot' . ($url[0] == "post" ? " menu-active" : "") . '"><a href="/post">Adv. Post</a>
 		</li><li class="menu-slot' . ($url[0] == "settings" ? " menu-active" : "") . '"><a href="/settings">Settings</a>

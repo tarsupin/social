@@ -50,7 +50,7 @@ class AppSocial_config {
 		(
 			`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
 			
-			`orig_poster`			varchar(22)					NOT NULL	DEFAULT '',
+			`orig_handle`			varchar(22)					NOT NULL	DEFAULT '',
 			`poster_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`post`					varchar(255)				NOT NULL	DEFAULT '',
 			

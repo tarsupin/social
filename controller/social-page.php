@@ -104,10 +104,10 @@ echo '
 	
 	<div id="personal-stats">
 		<div id="personal-stats-left">
-			<div class="stat-module"><div class="sm-top">4</div><div class="sm-bot">Posts</div></div>
-			<div class="stat-module"><div class="sm-top">0</div><div class="sm-bot">Friends</div></div>
-			<div class="stat-module"><div class="sm-top">0</div><div class="sm-bot">Following</div></div>
-			<div class="stat-module"><div class="sm-top">0</div><div class="sm-bot">Followers</div></div>
+			<div class="stat-module"><div class="sm-top">' . $social->data['posts'] . '</div><div class="sm-bot">Posts</div></div>
+			<div class="stat-module"><div class="sm-top">' . $social->data['friends'] . '</div><div class="sm-bot">Friends</div></div>
+			<div class="stat-module"><div class="sm-top">' . $social->data['following'] . '</div><div class="sm-bot">Following</div></div>
+			<div class="stat-module"><div class="sm-top">' . $social->data['followers'] . '</div><div class="sm-bot">Followers</div></div>
 		</div>
 	</div>
 </div>
@@ -153,7 +153,7 @@ echo '
 // Get the post list
 $postList = $social->getUserPosts($social->uniID, $social->clearance);
 
-$social->displayFeed($postList);
+$social->displayFeed($postList, $social->clearance);
 
 echo '
 </div>';
@@ -187,6 +187,7 @@ function positionReplyBox(user, postID)
 
 function commentReturn(response)
 {
+	console.log(response);
 	if(!response) { return; }
 	
 	obj = JSON.parse(response);

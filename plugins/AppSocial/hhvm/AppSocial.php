@@ -32,7 +32,7 @@ class AppSocial {
 	public bool $canPost = false;		// <bool> TRUE if the user can post on this page.
 	public bool $canComment = false;		// <bool> TRUE if the user can comment on this page.
 	
-	public string $linkProtect = "";		// <str> The link protection for any actions you make.
+	public static string $linkProtect = "";		// <str> The link protection for any actions you make.
 	
 	
 /****** Construct the user's social data ******/
@@ -45,7 +45,8 @@ class AppSocial {
 	{
 		$this->uniID = $uniID;
 		$this->data = AppSocial::getData($uniID);
-		$this->linkProtect = Link::prepare("uni6-social");
+		
+		self::$linkProtect = Link::prepare("uni6-social");
 		
 		$this->setPermissions();
 	}
@@ -65,16 +66,16 @@ class AppSocial {
 			$clearance = 10;
 		}
 		
-		// Check if you're a moderator or staff member
-		else if(Me::$clearance >= 6)
+		// Pull your clearance with this user
+		else
 		{
-			$clearance = Me::$clearance;
+			$clearance = AppFriends::getClearance(Me::$id, $this->uniID);
 		}
 		
-		// Check if you're a friend of the user
-		else if(AppFriends::isFriend(Me::$id, $this->uniID))
+		// Check if you're a moderator or staff member
+		if(Me::$clearance >= 6)
 		{
-			$clearance = 4;
+			$clearance = max(Me::$clearance, $clearance);
 		}
 		
 		// Set the access levels
@@ -130,7 +131,7 @@ class AppSocial {
 		}
 		
 		// Create the defaul social data
-		return Database::query("REPLACE INTO social_data (uni_id, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 2, 2, 0));
+		return Database::query("REPLACE INTO social_data (uni_id, perm_access, perm_post, perm_comment, perm_approval) VALUES (?, ?, ?, ?, ?)", array($userData['uni_id'], 0, 0, 0, 0));
 	}
 	
 	
@@ -170,7 +171,7 @@ class AppSocial {
 	
 	// $postData = AppSocial::getPostDirect($postID);
 	{
-		return Database::selectOne("SELECT * FROM social_posts WHERE id=? LIMIT 1", array($postID));
+		return Database::selectOne("SELECT sp.*, u.handle, u.display_name FROM social_posts sp INNER JOIN users u ON sp.poster_id=u.uni_id WHERE id=? LIMIT 1", array($postID));
 	}
 	
 	
@@ -307,12 +308,13 @@ class AppSocial {
 	
 	
 /****** Display a Social Wall Feed ******/
-	public function displayFeed 
+	public static function displayFeed 
 	(
 		array <int, array<str, mixed>> $postList		// <int:[str:mixed]> A list of post entries.
+	,	int $clearance = 0	// <int> The level of clearance you have to these posts.
 	): void					// RETURNS <void> OUTPUTS the wall feed.
 	
-	// echo AppSocial::displayFeed($postList);
+	// echo AppSocial::displayFeed($postList, [$clearance]);
 	{
 		foreach($postList as $post)
 		{
@@ -406,11 +408,11 @@ class AppSocial {
 			
 			echo nl2br(Comment::showSyntax($post['post'])) . '</div>
 				</div>
-				<div class="comment-wrap"><div class="extralinks"><a href="javascript:positionReplyBox(\'' . You::$handle . '\', ' . $post['id'] . ');"><span class="icon-comments"></span> Show Comments (' . $post['has_comments'] . ')</a>';
+				<div class="comment-wrap"><div class="extralinks"><a href="javascript:positionReplyBox(\'' . $post['handle'] . '\', ' . $post['id'] . ');"><span class="icon-comments"></span> Show Comments (' . $post['has_comments'] . ')</a>';
 			
-			if($this->clearance >= 6)
+			if($clearance >= 6)
 			{
-				echo '<a href="/' . You::$handle . '?delete=' . $post['id'] . '&' . $this->linkProtect . '"><span class="icon-circle-close"></span> Delete</a>';
+				echo '<a href="/' . You::$handle . '?delete=' . $post['id'] . '&' . self::$linkProtect . '"><span class="icon-circle-close"></span> Delete</a>';
 			}
 			
 			echo '<a href="#">. . . More</a></div></div>';

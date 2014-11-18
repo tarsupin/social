@@ -61,7 +61,7 @@ abstract class AppComment {
 	,	$comment				// <str> The comment to post.
 	,	$link = ""				// <str> The link to this particular comment.
 	,	$toUniID = 0			// <int> The UniID of the target being commented to.
-	,	$isPublic = true			// <bool> TRUE if this is a public post.
+	,	$isPublic = true		// <bool> TRUE if this is a public post.
 	)							// RETURNS <int> ID of the new comment, 0 if failed.
 	
 	// $commentID = AppComment::create($postID, $uniID, "Wow! Awesome!", $linkToComment, $toUniID, [$isPublic]);

@@ -26,6 +26,8 @@ $social = new AppSocial((int) $postData['poster_id']);
 // Make sure you have clearance to view the poster's comments (and this comment)
 if($social->canAccess)
 {
+	$comments = array();
+	
 	// Show Comments
 	if($postData['has_comments'] > 0)
 	{
@@ -34,7 +36,7 @@ if($social->canAccess)
 		
 		foreach($comments as $key => $val)
 		{
-			$comments[$key]["img"] = ProfilePic::image($postData['poster_id'], "small");
+			$comments[$key]["img"] = ProfilePic::image((int) $comments[$key]['uni_id'], "small");
 		}
 		
 		$comLen = count($comments);

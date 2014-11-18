@@ -90,7 +90,7 @@ foreach($requests as $request)
 {
 	echo '
 	<div class="friend-block">
-		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['friend_id'], "medium") . '" /></a>
+		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
 		<br /><a href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 		<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
@@ -102,7 +102,7 @@ foreach($requests as $request)
 echo '
 <h3 style="margin-top:22px;">Your Pending Friend Requests</h3>';
 
-if(count($requests) == 0)
+if(count($requestsSent) == 0)
 {
 	echo '<p>There are currently no sent friend requests waiting on responses.</p>';
 }

@@ -18,7 +18,9 @@ if(!isset($_GET['handle']) or !$friend = User::getDataByHandle($_GET['handle'], 
 $friend['uni_id'] = (int) $friend['uni_id'];
 
 // Make sure you are actually their friend
-if(!AppFriends::isFriend(Me::$id, $friend['uni_id']))
+$clearance = AppFriends::getClearance(Me::$id, $friend['uni_id']);
+
+if($clearance < 4)
 {
 	Alert::saveError("Not Friends", "You are not friends with that user.", 8);
 	
@@ -28,21 +30,21 @@ if(!AppFriends::isFriend(Me::$id, $friend['uni_id']))
 // Check if there was a form submission
 if(Form::submitted("friend-update"))
 {
-	FormValidate::number("View Permissions", $_POST['view_clearance'], 0, 9);
-	FormValidate::number("Write Permissions", $_POST['interact_clearance'], 0, 9);
+	FormValidate::number("Permissions", $_POST['clearance'], 0, 9);
 	
 	if(FormValidate::pass())
 	{
 		// If you set the friend to be deleted
-		if($_POST['view_clearance'] == 0)
+		if($_POST['clearance'] == 0)
 		{
-			AppFriends::delete(Me::$id, $friend['uni_id']);
-			
-			Alert::saveInfo("Friend Updated", "You and " . $friend['handle'] . " are no longer friends.");
+			if(AppFriends::unfriend(Me::$id, $friend['uni_id']))
+			{
+				Alert::saveInfo("Friend Updated", "You and " . $friend['handle'] . " are no longer friends.");
+			}
 		}
 		else
 		{
-			AppFriends::setClearance(Me::$id, $friend['uni_id'], $_POST['view_clearance'], $_POST['interact_clearance']);
+			AppFriends::setClearance(Me::$id, $friend['uni_id'], $_POST['clearance']);
 		}
 		
 		Alert::saveSuccess("Friend Updated", "You have updated " . $friend['handle'] . "'s permissions.");
@@ -50,9 +52,6 @@ if(Form::submitted("friend-update"))
 		header("Location: /friends"); exit;
 	}
 }
-
-// Get the clearance levels of this friend
-list($viewClearance, $interactClearance) = AppFriends::getClearance(Me::$id, $friend['uni_id']);
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -83,22 +82,10 @@ echo '
 		<br /><a href="' . URL::unifaction_social() . '">@' . $friend['handle'] . '</a>
 		
 		<div>
-			View Permissions:<br /><select name="view_clearance">' . str_replace('value="' . $viewClearance . '"', 'value="' . $viewClearance . '" selected', '
-				<option value="7">Trusted - Full Access</option>
-				<option value="5">Standard Access</option>
-				<option value="3">Limited Access</option>
-				<option value="1">Restricted Access</option>
-				<option value="0">Untrusted - DELETE FRIEND</option>') . '
-			</select>
-		</div>
-		
-		<div style="margin-top:22px;">
-			Write / Post Permissions:<br /><select name="interact_clearance">' . str_replace('value="' . $interactClearance . '"', 'value="' . $interactClearance . '" selected', '
-				<option value="7">Trusted - Full Rights</option>
-				<option value="5">Standard Rights</option>
-				<option value="3">Limited Rights</option>
-				<option value="1">Restricted Rights</option>
-				<option value="0">Untrusted - No Rights</option>') . '
+			Permissions:<br /><select name="clearance">' . str_replace('value="' . $clearance . '"', 'value="' . $clearance . '" selected', '
+				<option value="6">Trusted Friend</option>
+				<option value="4">Standard Access</option>
+				<option value="0">REMOVE FRIEND</option>') . '
 			</select>
 		</div>
 	</p>
