@@ -309,14 +309,11 @@ class AppSocial {
 /****** Display a Social Wall Feed ******/
 	public function displayFeed 
 	(
-		int $page = 1		// <int> The page to begin posting feeds on.
-	,	int $showNum = 15	// <int> The number of results to return.
+		array <int, array<str, mixed>> $postList		// <int:[str:mixed]> A list of post entries.
 	): void					// RETURNS <void> OUTPUTS the wall feed.
 	
-	// echo AppSocial::displayFeed($page, $showNum);
+	// echo AppSocial::displayFeed($postList);
 	{
-		$postList = $this->getUserPosts($this->uniID, $this->clearance, $page, $showNum);
-		
 		foreach($postList as $post)
 		{
 			// Recognize Integers
@@ -425,108 +422,5 @@ class AppSocial {
 			echo '
 			</div>';
 		}
-	}
-	
-	
-/****** Display a Social Wall Feed ******/
-	public static function showFeed
-	(
-		array <int, array<str, mixed>> $socialPosts	// <int:[str:mixed]> The data that contains all of the social posts.
-	,	array <str, bool> $clearance		// <str:bool> The clearance levels for the page.
-	): void					// RETURNS <void> OUTPUTS the wall feed.
-	
-	// echo AppSocial::showFeed($socialPosts);
-	{
-		// Comment replies
-		echo '
-		<div class="post-footer">';
-		
-		// Display the Post Message
-		if($post['post'] != "")
-		{
-			echo '
-			<div>
-				<a href="/' . User::$cache[$pID]['handle'] . '"><img class="circimg" src="' . ProfilePic::image($pID, "large") . '" /></a>
-				<p class="post-message">' . nl2br(Comment::showSyntax($post['post'])) . '</p>
-			</div>';
-		}
-		
-		echo '
-			<div class="extralinks">
-				<a href="/share?id=' . $post['id'] . '">Share</a>
-				<a href="/' . You::$handle . "?" . Link::prepareData("send-tip-social", You::$id) . '">Tip ' . You::$name . '</a>';
-				
-				if($clearance['admin'])
-				{
-					echo '
-					<a href="/' . You::$handle . '?' . Link::prepareData("delete-post", $post['id']) . '" onclick="return confirm(\'Are you sure you want to delete this?\');">Delete</a>';
-				}
-		
-		echo '
-			</div>';
-		
-		// Show Comments
-		if($post['has_comments'] > 0)
-		{
-			// Get Comments
-			$comments = AppComment::getList($post['id'], 0, 3, "DESC");
-			$comLen = count($comments);
-			
-			// Reverse the order (since you're providing the last three)
-			if($comLen > 1)
-			{
-				$comments = array_reverse($comments);
-			}
-			
-			// Provide option to show all comments
-			if($post['has_comments'] > $comLen)
-			{
-				echo '
-				<div class="block-group block-interior">
-					View all comments
-				</div>';
-			}
-			
-			// Display Last Three Comments
-			foreach($comments as $comment)
-			{
-				// Recognize Integers
-				$cpID = (int) $comment['uni_id'];
-				$comment['id'] = (int) $comment['id'];
-				$comment['date_posted'] = (int) $comment['date_posted'];
-				
-				if(!isset(User::$cache[$cpID]))
-				{
-					User::$cache[$cpID] = Database::selectOne("SELECT handle, display_name FROM users WHERE uni_id=? LIMIT 1", array($pID));
-				}
-				
-				// Display the Comment
-				echo '
-				<div>
-					<div style="float:left; margin-left:12px;"><a href="/' . User::$cache[$cpID]['handle'] . '"><img class="circimg-small" src="' . ProfilePic::image($cpID, "small") . '" /></a></div>
-					<p class="post-message">' . nl2br(Comment::showSyntax($comment['comment'])) . '
-						<br /><span style="font-size:0.8em;">' . User::$cache[$cpID]['display_name'] . ' &bull; ' . Time::fuzzy($comment['date_posted']) . '</span>
-					</p>
-				</div>';
-			}
-		}
-		
-		// Provide the ability to post a comment (if allowed)
-		if(isset($clearance['comment']))
-		{
-			echo '
-				<div>
-					<form class="uniform" id="comment_' . $post['id'] . '"  action="/' . You::$handle . '" method="post">' . Form::prepare("social-post") . '
-						<img class="circimg-small post-avi" src="' . ProfilePic::image(Me::$id) . '" />
-						<p class="comment-box-wrap">
-						<textarea class="comment-box" name="commentBox[' . $post['id'] . ']" value="" placeholder="Add a Comment . . ." onkeypress="return commentPost(event, ' . $post['id'] . ');"></textarea>
-						<br /><input class="comment-box-input" type="submit" name="subCom_' . $post['id'] . '" value="Post Comment" hidefocus="true" tabindex="-1" />
-						</p>
-					</form>
-				</div>';
-		}
-		
-		echo '
-		</div>';
 	}
 }

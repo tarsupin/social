@@ -68,7 +68,7 @@ abstract class AppFeed {
 			foreach($friends as $friend)
 			{
 				// Get the friends most recent posts
-				$posts = Database::selectMultiple("SELECT * FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['uni_id'], (int) $friend['uni_id']));
+				$posts = Database::selectMultiple("SELECT * FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id WHERE spu.uni_id=? AND sp.poster_id=? ORDER BY sp.id DESC LIMIT " . $limitScan, array((int) $friend['friend_id'], (int) $friend['friend_id']));
 				
 				foreach($posts as $post)
 				{
