@@ -187,7 +187,6 @@ function positionReplyBox(user, postID)
 
 function commentReturn(response)
 {
-	console.log(response);
 	if(!response) { return; }
 	
 	obj = JSON.parse(response);

@@ -149,6 +149,9 @@ if(Form::submitted("social-post-adv"))
 		// There may have been errors from the image upload, so double check here
 		if(FormValidate::pass())
 		{
+			// Set the Clearance Level
+			$clearance = isset($_POST['submit_public']) ? 0 : 4;
+			
 			// Create the post
 			$postID = AppSocial::createPost(Me::$id, Me::$id, $clearance, $attachmentID, $_POST['message'], "", strtotime($_POST['post_date']), $hashData);
 			
@@ -187,7 +190,7 @@ echo '
 	<p>Upload Image: <input type="file" name="image" value="' . $_POST['image'] . '"></p>
 	<p>Video URL: <input type="text" name="video" value="' . $_POST['video'] . '"> (from vimeo.com or youtube.com)</p>
 	<p>Post at: <input type="text" id="dt" name="post_date" class="input" value="' . $_POST['post_date'] . '" size="15"></p>
-	<p><input type="submit" name="submit" value="Submit Post" tabindex="20"></p>
+	<p><input type="submit" name="submit_friends" value="Post to Friends" class="button" /> <input type="submit" name="submit_public" value="Public Post" class="button" /></p>
 </form>
 </div>
 

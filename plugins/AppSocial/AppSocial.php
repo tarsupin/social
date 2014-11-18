@@ -202,7 +202,10 @@ class AppSocial {
 		{
 			$postID = Database::$lastID;
 			
-			$pass = Database::query("INSERT INTO `users_posts` (uni_id, id) VALUES (?, ?)", array($socialID, $postID,));
+			if($pass = Database::query("INSERT INTO `users_posts` (uni_id, id) VALUES (?, ?)", array($socialID, $postID)))
+			{
+				$pass = Database::query("UPDATE social_data SET posts=posts+1 WHERE uni_id=?", array($posterID));
+			}
 		}
 		
 		if(Database::endTransaction(($pass and $postID)))
@@ -211,6 +214,14 @@ class AppSocial {
 			if($clearance == 0)
 			{
 				Comment::process($posterID, $message, $link, $socialID, $hashData);
+			}
+			
+			// Post a notification to someone's wall you're posting on
+			if($socialID != Me::$id)
+			{
+				$userData = User::get($socialID, "handle");
+				
+				Notifications::create($socialID, $link, "@" . Me::$vals['handle'] . " has posted on your wall.");
 			}
 			
 			return $postID;

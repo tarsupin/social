@@ -15,7 +15,7 @@ if(!$uniID = User::getIDByHandle(Sanitize::variable($_POST['user'])))
 }
 
 // Get the post data
-if(!$postData = AppSocial::getPost($uniID, $postID))
+if(!$postData = AppSocial::getPostDirect($postID))
 {
 	exit;
 }
@@ -32,7 +32,7 @@ if($social->canAccess)
 	if($postData['has_comments'] > 0)
 	{
 		// Get Comments
-		$comments = AppComment::getListAJAX($postData['id'], 1, 3, "DESC");
+		$comments = AppComment::getListAJAX((int) $postData['id'], 1, 3, "DESC");
 		
 		foreach($comments as $key => $val)
 		{

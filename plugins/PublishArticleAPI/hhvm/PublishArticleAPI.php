@@ -73,7 +73,7 @@ class PublishArticleAPI extends API {
 		$attachment->save();
 		
 		// Create the post
-		return (bool) AppSocial::createPost((int) $this->data['uni_id'], 0, (int) $this->data['poster_id'], $attachment->id, "", $source, 0, array(), $origHandle);
+		return (bool) AppSocial::createPost((int) $this->data['uni_id'], (int) $this->data['poster_id'], 0, $attachment->id, "", $source, 0, array(), $origHandle);
 	}
 	
 }
