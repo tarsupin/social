@@ -91,6 +91,12 @@ abstract class AppComment {
 				Comment::process($uniID, $comment, $link, $toUniID);
 			}
 			
+			// If it's not your wall, get the post data to prepare a notification
+			if($toUniID != Me::$id)
+			{
+				Notifications::create($toUniID, $link, "@" . Me::$vals['handle'] . " has replied to a comment on your wall.");
+			}
+			
 			return $commentID;
 		}
 		

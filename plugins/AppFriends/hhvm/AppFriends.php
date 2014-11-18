@@ -206,7 +206,7 @@ abstract class AppFriends {
 		Database::startTransaction();
 		
 		// Remove the friend's entry (if applicable)
-		if(!$pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID)))
+		if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID)))
 		{
 			$pass = Database::query("UPDATE social_data SET followers=followers-1 WHERE uni_id=? LIMIT 1", array($friendID));
 		}

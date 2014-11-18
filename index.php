@@ -12,16 +12,6 @@ Me::$getColumns = "uni_id, handle, clearance, role, display_name";
 
 Me::initialize();
 
-if(isset($_GET['u6access']))
-{
-	$_SESSION['u6access'] = true;
-}
-
-if(!isset($_SESSION['u6access']))
-{
-	die("This site is currently being updated.");
-}
-
 // Determine which page you should point to, then load it
 require(SYS_PATH . "/routes.php");
 

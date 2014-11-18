@@ -66,6 +66,8 @@ else if($value = Link::clicked() and $value == "uni6-social")
 		{
 			if(AppFriends::follow(Me::$id, You::$id))
 			{
+				$social->clearance = max($social->clearance, 1);
+				
 				Alert::saveSuccess("Follow Success", "You have successfully followed " . You::$handle);
 			}
 		}
@@ -75,6 +77,8 @@ else if($value = Link::clicked() and $value == "uni6-social")
 		{
 			if(AppFriends::unfollow(Me::$id, You::$id))
 			{
+				$social->clearance = 0;
+				
 				Alert::saveSuccess("Unfollow Success", "You have successfully unfollowed " . You::$handle);
 			}
 		}

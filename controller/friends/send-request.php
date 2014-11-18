@@ -77,6 +77,10 @@ if(Form::submitted("send-req-uf"))
 	}
 }
 
+// Set the active user to yourself
+You::$id = Me::$id;
+You::$handle = Me::$vals['handle'];
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
