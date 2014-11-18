@@ -56,9 +56,35 @@ else if(Form::submitted("social-reply-box"))
 }
 
 // If there is a delete action
-else if(isset($_GET['delete']))
+else if($value = Link::clicked() and $value == "uni6-social")
 {
-	$social->deletePost(You::$id, (int) $_GET['delete']);
+	// Check if there is an action to run
+	if(isset($_GET['action']))
+	{
+		// If you're following a user
+		if($_GET['action'] == "follow" and Me::$id != You::$id)
+		{
+			if(AppFriends::follow(Me::$id, You::$id))
+			{
+				Alert::saveSuccess("Follow Success", "You have successfully followed " . You::$handle);
+			}
+		}
+		
+		// If you're unfollowing a user
+		else if($_GET['action'] == "unfollow" and Me::$id != You::$id)
+		{
+			if(AppFriends::unfollow(Me::$id, You::$id))
+			{
+				Alert::saveSuccess("Unfollow Success", "You have successfully unfollowed " . You::$handle);
+			}
+		}
+	}
+	
+	// Delete a post
+	else if(isset($_GET['delete']))
+	{
+		$social->deletePost(You::$id, (int) $_GET['delete']);
+	}
 }
 
 // Include Responsive Script
@@ -99,7 +125,28 @@ echo '
 	<div id="social-header">
 		<img id="social-header-img" src="' . $headPhoto . '" />
 		<div id="social-propic"><img src="' . ProfilePic::image(You::$id, $size = "large") . '" /></div>
-		<div id="social-name">@' . You::$handle . '</div>
+		<div id="social-name">@' . You::$handle . '</div>';
+	
+	// Friend, Follow, and My Page
+	if($social->clearance == 0 or $social->clearance == 2)
+	{
+		echo '
+		<div id="follow-high" class="follow-button"><a href="/friends/send-request?handle=' . You::$handle . '">+ Friend</a></div>
+		<div id="follow-low" class="follow-button"><a href="/' . You::$handle . '?action=follow&' . AppSocial::$linkProtect . '">+ Follow</a></div>';
+	}
+	else if($social->clearance < 4)
+	{
+		echo '
+		<div id="follow-high" class="follow-button"><a href="/friends/send-request?handle=' . You::$handle . '">+ Friend</a></div>
+		<div id="follow-low" class="follow-button clicked"><a href="/' . You::$handle . '?action=unfollow&' . AppSocial::$linkProtect . '">Following</a></div>';
+	}
+	else if($social->clearance < 8)
+	{
+		echo '
+		<div id="follow-low" class="follow-button clicked"><a href="/friends/edit?handle=' . You::$handle . '">Friend</a></div>';
+	}
+	
+	echo '
 	</div>
 	
 	<div id="personal-stats">

@@ -29,14 +29,16 @@
 #personal-stats-right { float:right; height:64px; }
 
 
-
 /* Follow Button */
-#follow-button { background-color:white; color:#ea6060; border:1px solid #ea6060; border-radius:6px; padding:6px 20px 6px 20px; font-size: 15px; text-transform:uppercase; height:30px; margin-top:10px; margin-right:13px; line-height:30px; vertical-align:middle; }
-#follow-button>span { font-size:25px; vertical-align:middle; }
-#follow-button:hover { color:white; background-color:#ea6060; border:1px solid white; }
+.follow-button { position:absolute; border-radius:6px; font-size: 25px; color:white; background-color:#ea6060; border:1px solid white; text-transform:uppercase; vertical-align:middle; }
+.follow-button>a { display:block; padding:6px 14px 6px 14px; height:20px; line-height:24px; color:white !important; vertical-align:middle; }
+.follow-button:hover { background-color:white; color:#ea6060; border:1px solid #ea6060; }
+.follow-button:hover>a { color:#ea6060 !important; }
+.follow-button.clicked { background-color:white; border:1px solid #ea6060; }
+.follow-button.clicked>a { color:#ea6060 !important; }
 
-#follow-button.clicked { color:white; background-color:#ea6060; border:1px solid white; }
-
+#follow-high { right:10px; bottom:50px; }
+#follow-low { right:10px; bottom:10px; }
 
 /* Post Message Box */
 #post-box { border:1px solid #c0c0c0; background-color:white; margin-bottom:4px; min-height:60px; }
