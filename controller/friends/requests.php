@@ -24,15 +24,23 @@ if(isset($_GET['handle']))
 			// If the friend request is being approved
 			if($link == "approve-friend-" . $friend['handle'])
 			{
-				Alert::saveSuccess("Friend Approved", "You have approved " . $friend['handle'] . "'s friend request.");
-				AppFriends::approve(Me::$id, $friend['uni_id']);
+				if(AppFriends::approve(Me::$id, $friend['uni_id']))
+				{
+					Alert::saveSuccess("Friend Approved", "You have approved " . $friend['handle'] . "'s friend request.");
+				}
+				else
+				{
+					Alert::error("Friend Failure", "There was an error while trying to approve " . $friend['handle'] . "'s friend request.");
+				}
 			}
 			
 			// If the friend request is being denied
 			else if($link == "deny-friend-" . $friend['handle'])
 			{
-				Alert::saveSuccess("Friend Approved", "You have denied " . $friend['handle'] . "'s friend request.");
-				AppFriends::deny(Me::$id, $friend['uni_id']);
+				if(AppFriends::deny(Me::$id, $friend['uni_id']))
+				{
+					Alert::saveSuccess("Friend Approved", "You have denied " . $friend['handle'] . "'s friend request.");
+				}
 			}
 		}
 	}
