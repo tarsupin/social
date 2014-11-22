@@ -427,9 +427,9 @@ abstract class AppFriends {
 				if($pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array(4, $friendID, $uniID)))
 				{
 					// Update the social data
-					if($pass = Database::query("UPDATE social_data SET friends=friends+1, followers=followers-1 WHERE uni_id=? LIMIT 1", array($uniID)))
+					if($pass = Database::query("UPDATE social_data SET friends=friends+1 WHERE uni_id=? LIMIT 1", array($uniID)))
 					{
-						$pass = Database::query("UPDATE social_data SET friends=friends+1, following=following-1 WHERE uni_id=? LIMIT 1", array($friendID));
+						$pass = Database::query("UPDATE social_data SET friends=friends+1 WHERE uni_id=? LIMIT 1", array($friendID));
 					}
 				}
 			}
@@ -475,13 +475,7 @@ abstract class AppFriends {
 	{
 		Database::startTransaction();
 		
-		if($pass = Database::query("DELETE FROM friends_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID)))
-		{
-			if($pass = Database::query("UPDATE social_data SET followers=followers-1 WHERE uni_id=? LIMIT 1", array($uniID)))
-			{
-				$pass = Database::query("UPDATE social_data SET following=following-1 WHERE uni_id=? LIMIT 1", array($friendID));
-			}
-		}
+		$pass = Database::query("DELETE FROM friends_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID));
 		
 		return Database::endTransaction($pass);
 	}

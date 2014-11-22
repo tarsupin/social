@@ -338,7 +338,7 @@ class AppSocial {
 				<div class="comment-left"><a href="/' . $post['handle'] . '"><img class="circimg" src="' . ProfilePic::image($post['poster_id'], "medium") . '"></a></div>
 				<div class="comment-right">
 					<div class="comment-top">
-						<div class="comment-data"><span>' . $post['display_name'] . '</span> <a class="handle" href="/' . $post['handle'] . '">@' . $post['handle'] . '</a></div>
+						<div class="comment-data"><span class="hide-600">' . $post['display_name'] . '</span> <a class="handle" href="/' . $post['handle'] . '">@' . $post['handle'] . '</a></div>
 						<div class="comment-time-post">' . Time::fuzzy($post['date_posted']) . '</div>
 					</div>
 					<div class="comment-message">';
@@ -417,7 +417,7 @@ class AppSocial {
 			
 			echo nl2br(Comment::showSyntax($post['post'])) . '</div>
 				</div>
-				<div class="comment-wrap"><div class="extralinks"><a href="javascript:positionReplyBox(\'' . $post['handle'] . '\', ' . $post['id'] . ');"><span class="icon-comments"></span> Show Comments (' . $post['has_comments'] . ')</a>';
+				<div class="comment-wrap"><div class="extralinks"><a href="javascript:positionReplyBox(\'' . $post['handle'] . '\', ' . $post['id'] . ');"><span class="icon-comments"></span> Comments (' . $post['has_comments'] . ')</a>';
 			
 			if($clearance >= 6)
 			{

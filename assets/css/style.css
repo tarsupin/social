@@ -51,12 +51,14 @@
 #post-textwrap { margin-right:18px; padding:8px 2px 8px 0px; }
 #post-textwrap>textarea { width:100%; resize:vertical; font-size:16px; font-family:Arial; padding:4px; }
 
+#post-bottom { overflow:hidden; }
+
 #post-bottom-left { font-size: 20px; color:#ea6060; padding-top:8px; padding-bottom:10px; display:inline-block; }
 #post-bottom-left span { padding:5px 10px 5px 10px; border-right:1px solid #d8d8d8; }
 #post-bottom-left a { color:#ea6060; }
 #post-bottom-left a:first-child { border-left:1px solid #d8d8d8; }
 
-#post-bottom-right { display:inline-block; float:right; margin-right:15px; }
+#post-bottom-right { float:right; margin-right:15px; }
 
 
 /*********************
@@ -89,6 +91,14 @@
 
 .comment-repost { color:gray; padding:2px 0px 2px 0px; }
 
+
+
+/* Mobile Version */
+@media screen and (max-width:600px) {
+	.comment { padding-top:6px; }
+	.comment-left { display:none; }
+	.comment-right { margin-left:0px; }
+}
 
 /******************************
 ****** Responsive Design ******

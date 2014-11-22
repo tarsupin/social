@@ -49,7 +49,7 @@ else if(Form::submitted("social-reply-box"))
 				$isPublic = $postData['clearance'] ? false : true;
 				
 				// Create the comment
-				AppComment::create((int) $postData['id'], Me::$id, $comment, "/" . You::$handle, You::$id, $isPublic);
+				AppComment::create((int) $postData['id'], Me::$id, $comment, SITE_URL . "/" . You::$handle, You::$id, $isPublic);
 			}
 		}
 	}
@@ -157,7 +157,7 @@ echo '
 		<div id="personal-stats-left">
 			<div class="stat-module"><div class="sm-top">' . $social->data['posts'] . '</div><div class="sm-bot">Posts</div></div>
 			<div class="stat-module"><div class="sm-top">' . $social->data['friends'] . '</div><div class="sm-bot">Friends</div></div>
-			<div class="stat-module"><div class="sm-top">' . $social->data['following'] . '</div><div class="sm-bot">Following</div></div>
+			<div class="stat-module hide-600"><div class="sm-top">' . $social->data['following'] . '</div><div class="sm-bot">Following</div></div>
 			<div class="stat-module"><div class="sm-top">' . $social->data['followers'] . '</div><div class="sm-bot">Followers</div></div>
 		</div>
 	</div>

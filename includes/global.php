@@ -6,7 +6,7 @@ if(Me::$loggedIn)
 	$url1 = isset($url[1]) ? $url[1] : '';
 	
 	// Main Navigation
-	WidgetLoader::add("SidePanel", 10, '
+	WidgetLoader::add("MobilePanel", 10, '
 	<div class="panel-box">
 		<ul class="panel-slots">
 			<li class="nav-slot' . (in_array($url[0], array("", "home")) ? " nav-active" : "") . '"><a href="/">Social Feed<span class="icon-circle-right nav-arrow"></span></a></li>

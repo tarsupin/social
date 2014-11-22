@@ -42,7 +42,7 @@ if(Me::$loggedIn)
 				$isPublic = $postData['clearance'] ? false : true;
 				
 				// Create the comment
-				AppComment::create((int) $postData['id'], Me::$id, $comment, "/" . $postData['handle'], (int) $postData['poster_id'], $isPublic);
+				AppComment::create((int) $postData['id'], Me::$id, $comment, SITE_URL . "/" . $postData['handle'], (int) $postData['poster_id'], $isPublic);
 			}
 		}
 	}
