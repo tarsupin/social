@@ -34,6 +34,8 @@ class AppSocial_config {
 			`perm_comment`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			`perm_approval`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
+			`feed_sort`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
+			
 			`posts`					mediumint(6)	unsigned	NOT NULL	DEFAULT '0',
 			`friends`				mediumint(6)	unsigned	NOT NULL	DEFAULT '0',
 			`followers`				mediumint(6)	unsigned	NOT NULL	DEFAULT '0',

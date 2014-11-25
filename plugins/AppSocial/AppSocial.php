@@ -219,7 +219,9 @@ class AppSocial {
 			// Post a notification to someone's wall you're posting on
 			if($socialID != Me::$id)
 			{
-				Notifications::create($socialID, $link, "@" . Me::$vals['handle'] . " has posted on your wall.");
+				$userData = User::get($posterID, "handle");
+				
+				Notifications::create($socialID, $link, "@" . $userData['handle'] . " has posted on your wall.");
 			}
 			
 			return $postID;

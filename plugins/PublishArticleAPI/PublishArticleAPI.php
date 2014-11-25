@@ -49,7 +49,7 @@ class PublishArticleAPI extends API {
 	// $this->runAPI()
 	{
 		// Make sure the appropriate data was sent
-		if(!isset($this->data['uni_id']) or !isset($this->data['poster_id']) or !isset($this->data['image_url']))
+		if(!isset($this->data['uni_id']) or !isset($this->data['poster_id']) or !isset($this->data['thumbnail']))
 		{
 			return false;
 		}
@@ -58,10 +58,10 @@ class PublishArticleAPI extends API {
 		$title = isset($this->data['title']) ? Sanitize::safeword($this->data['title'], " !?'\"") : "";
 		$description = isset($this->data['description']) ? Sanitize::safeword($this->data['description'], " !?'\"") : "";
 		$source = isset($this->data['source']) ? Sanitize::url($this->data['source']) : "";
-		$origHandle = isset($this->data['orig_handle'] ? Sanitize::variable($this->data['orig_handle']) : '';
+		$origHandle = isset($this->data['orig_handle']) ? Sanitize::variable($this->data['orig_handle']) : '';
 		
 		// Create the attachment
-		$attachment = new Attachment(Attachment::TYPE_ARTICLE, Sanitize::url($this->data['image_url']));
+		$attachment = new Attachment(Attachment::TYPE_ARTICLE, Sanitize::url($this->data['thumbnail']));
 		
 		// Update the attachment's important settings
 		$attachment->setSource($source);

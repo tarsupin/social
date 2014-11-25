@@ -7,15 +7,15 @@ if(Me::$loggedIn)
 	// Update your Feed
 	AppFeed::update(Me::$id);
 	
-	// Get the list of posts in your feed
-	$feedPosts = AppFeed::get(Me::$id);
-	
 	// Set the active user to yourself
 	You::$id = Me::$id;
 	You::$handle = Me::$vals['handle'];
 	
 	// Get the social data
 	$social = new AppSocial(Me::$id);
+	
+	// Get the list of posts in your feed
+	$feedPosts = AppFeed::get(Me::$id, (int) $social->data['feed_sort']);
 	
 	// If you submitted a comment
 	if(Form::submitted("social-reply-box") and isset($_POST['social_reply_text']) and isset($_POST['social_reply_input']))

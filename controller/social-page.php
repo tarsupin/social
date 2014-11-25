@@ -170,9 +170,8 @@ echo '
 		<div id="post-top"><div id="post-textwrap"><textarea name="post_message" placeholder="Create a post . . ."></textarea></div></div>
 		<div id="post-bottom">
 			<div id="post-bottom-left">
-				<a href="/post"><span class="icon-image"></span></a>
-				<a href="/post"><span class="icon-video"></span></a>
-				<a href="/post"><span class="icon-attachment"></span></a>
+				<a href="/post?gen=image"><span class="icon-image"></span></a>
+				<a href="/post?gen=video"><span class="icon-video"></span></a>
 			</div>
 			<div id="post-bottom-right"><input type="submit" name="submit_friends" value="Post to Friends" class="button" /> <input type="submit" name="submit_public" value="Public Post" class="button" /></div>
 		</div>
@@ -180,6 +179,8 @@ echo '
 </div>
 </form>
 ';
+
+// <a href="/post"><span class="icon-attachment"></span></a>
 
 // Social Posts
 echo '

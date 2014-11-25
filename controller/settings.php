@@ -54,12 +54,13 @@ if(Form::submitted("upl-social-header"))
 	}
 	
 	// Prepare Values
-	$social->data['perm_access'] = isset($_POST['access']) ? (int) $_POST['access'] : $socialPage['perm_access'];
-	$social->data['perm_post'] = isset($_POST['post']) ? (int) $_POST['post'] : $socialPage['perm_post'];
-	$social->data['perm_comment'] = isset($_POST['comment']) ? (int) $_POST['comment'] : $socialPage['perm_comment'];
+	$social->data['perm_access'] = isset($_POST['access']) ? (int) $_POST['access'] : (int) $social->data['perm_access'];
+	$social->data['perm_post'] = isset($_POST['post']) ? (int) $_POST['post'] : (int) $social->data['perm_post'];
+	$social->data['perm_comment'] = isset($_POST['comment']) ? (int) $_POST['comment'] : (int) $social->data['perm_comment'];
+	$social->data['feed_sort'] = isset($_POST['feed_sort']) ? (int) $_POST['feed_sort'] : (int) $social->data['feed_sort'];
 	
 	// Update the page settings
-	Database::query("UPDATE social_data SET perm_access=?, perm_post=?, perm_comment=? WHERE uni_id=? LIMIT 1", array($social->data['perm_access'], $social->data['perm_post'], $social->data['perm_comment'], Me::$id));
+	Database::query("UPDATE social_data SET perm_access=?, perm_post=?, perm_comment=?, feed_sort=? WHERE uni_id=? LIMIT 1", array($social->data['perm_access'], $social->data['perm_post'], $social->data['perm_comment'], $social->data['feed_sort'], Me::$id));
 	
 	Alert::success("Settings Updated", "Your page settings have been updated.");
 }
@@ -116,6 +117,16 @@ echo '
 			<option value="8">Only I can comment on my page</option>
 			<option value="4">Only my friends can comment on my page</option>
 			<option value="0">Guests are allowed to comment on my page</option>') . '
+		</select>
+	</p>
+	
+	<h3 style="margin-top:22px;">Feed Settings</h3>
+	
+	<p>
+		<strong>How should I sort the feed?</strong><br />
+		<select name="feed_sort">' . str_replace('value="' . $social->data['feed_sort'] . '"', 'value="' . $social->data['feed_sort'] . '" selected', '
+			<option value="1">Sort by date (recent posts first)</option>
+			<option value="0">Sort by relevance</option>') . '
 		</select>
 	</p>
 	

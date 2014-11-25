@@ -30,7 +30,7 @@ if(Form::submitted("social-post-adv"))
 	// Prepare Values
 	$hashData = array();
 	$subImage = (isset($_FILES['image']) and $_FILES['image']['tmp_name'] != "") ? true : false;
-	$subVideo = ($_POST['video'] != "") ? true : false;
+	$subVideo = (isset($_POST['video']) and $_POST['video'] != "") ? true : false;
 	
 	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, ($subImage or $subVideo) ? 300 : 1000);
 	FormValidate::variable("valid date", $_POST['post_date'], 0, 19, ":- ");
@@ -186,10 +186,22 @@ echo '
 <div style="margin-top:12px;">
 <form class="uniform" action="/post" method="post" enctype="multipart/form-data">' . Form::prepare("social-post-adv") . '
 	<p>
-		<textarea name="message" placeholder="Write your message here . . ." style="width:90%;" tabindex="10" autofocus>' . htmlspecialchars($_POST['message']) . '</textarea></p>
-	<p>Upload Image: <input type="file" name="image" value="' . $_POST['image'] . '"></p>
-	<p>Video URL: <input type="text" name="video" value="' . $_POST['video'] . '"> (from vimeo.com or youtube.com)</p>
-	<p>Post at: <input type="text" id="dt" name="post_date" class="input" value="' . $_POST['post_date'] . '" size="15"></p>
+		<textarea name="message" placeholder="Write your message here . . ." style="width:90%;" tabindex="10" autofocus>' . htmlspecialchars($_POST['message']) . '</textarea></p>';
+
+if(!isset($_GET['gen']) or $_GET['gen'] == "image")
+{
+	echo '
+	<p>Upload Image: <input type="file" name="image" value="' . $_POST['image'] . '"></p>';
+}
+
+if(!isset($_GET['gen']) or $_GET['gen'] == "video")
+{
+	echo '
+	<p>Video URL: <input type="text" name="video" value="' . $_POST['video'] . '"> (from vimeo.com or youtube.com)</p>';
+}
+
+echo '
+	<p>Post at: <input type="text" id="dt" name="post_date" class="input" value="' . $_POST['post_date'] . '" size="25"></p>
 	<p><input type="submit" name="submit_friends" value="Post to Friends" class="button" /> <input type="submit" name="submit_public" value="Public Post" class="button" /></p>
 </form>
 </div>

@@ -6,37 +6,17 @@
 
 This plugin provides tools to identify a user's friends and check their permissions.
 
-Friends have two types of permissions:
-
-	"View Permissions" is how much the user is allowing you to view.
-		
-		Full Access would mean the friend can see everything the user creates .
-		Standard Access means the friend can see most things the user creates, except those listed as trusted only.
-		Limited Access means the friend can only see the things that the user creates that are listed as limited.
-		Restricted Access means you're basically limited to public information only, but you're listed as a friend.
-	
-	"Interact Permissions" is what the friend can actually post.
-		
-		Full Access allows you to post on everything the user has enabled: comments, posts, articles, etc.
-		Standard Access allows all standard features for the user.
-		Limited Access means you're probably only able to interact with limited functionality, such as "likes".
-		Restricted Access means you're probably not able to do much of anything unless it's the true minimum.
-		No Access means you can't interact with anything.
-		
-		Note: Interact permissions are only as strong as the friend's view permissions allow. If the user cannot view
-		something, they often won't have the ability to post in relation to it.
-
 ------------------------------
 ------ Friend Clearance ------
 ------------------------------
 
 There are a few levels of clearances that work with friends:
 
-7 - Trusted - Full Access
-5 - Standard Access
-3 - Limited Access
-1 - Restricted Access (probably can't see much of anything)
-0 - Untrusted
+6 - Trusted Friends
+4 - Friends
+3 - Both Following Each Other
+2 - Being Followed
+1 - Following
 
 
 -------------------------------
@@ -147,10 +127,7 @@ abstract class AppFriends {
 		// Set the friend's entry
 		if(!$friendClearance)
 		{
-			if($pass = Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($friendID, $uniID, 2)))
-			{
-				$pass = Database::query("UPDATE social_data SET followers=followers+1 WHERE uni_id=? LIMIT 1", array($friendID));
-			}
+			$pass = Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($friendID, $uniID, 2));
 		}
 		else
 		{
@@ -165,10 +142,7 @@ abstract class AppFriends {
 		// Set the user's entry
 		if(!$myClearance)
 		{
-			if($pass = Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($uniID, $friendID, 1)))
-			{
-				$pass = Database::query("UPDATE social_data SET following=following+1 WHERE uni_id=? LIMIT 1", array($uniID));
-			}
+			$pass = Database::query("REPLACE INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($uniID, $friendID, 1));
 		}
 		else
 		{
@@ -176,6 +150,15 @@ abstract class AppFriends {
 			$nc = max(3, $myClearance);
 			
 			$pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array($nc, $uniID, $friendID));
+		}
+		
+		if($pass)
+		{
+			// Update the friend counts
+			if($pass = self::updateFriendCounts($uniID))
+			{
+				$pass = self::updateFriendCounts($friendID);
+			}
 		}
 		
 		return Database::endTransaction($pass);
@@ -208,15 +191,15 @@ abstract class AppFriends {
 		// Remove the friend's entry (if applicable)
 		if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID)))
 		{
-			$pass = Database::query("UPDATE social_data SET followers=followers-1 WHERE uni_id=? LIMIT 1", array($friendID));
-		}
-		
-		if(!$pass) { return Database::endTransaction(false); }
-		
-		// Remove the user's entry
-		if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
-		{
-			$pass = Database::query("UPDATE social_data SET following=following-1 WHERE uni_id=? LIMIT 1", array($uniID));
+			// Remove the user's entry
+			if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
+			{
+				// Update the friend counts
+				if($pass = self::updateFriendCounts($uniID))
+				{
+					$pass = self::updateFriendCounts($friendID);
+				}
+			}
 		}
 		
 		return Database::endTransaction($pass);
@@ -247,15 +230,15 @@ abstract class AppFriends {
 		// Update the friend's entry
 		if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($friendID, $uniID)))
 		{
-			$pass = Database::query("UPDATE social_data SET friends=friends-1 WHERE uni_id=? LIMIT 1", array($friendID));
-		}
-		
-		if(!$pass) { return Database::endTransaction(false); }
-		
-		// Update the user's entry
-		if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
-		{
-			$pass = Database::query("UPDATE social_data SET friends=friends-1 WHERE uni_id=? LIMIT 1", array($uniID));
+			// Update the user's entry
+			if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID)))
+			{
+				// Update the friend counts
+				if($pass = self::updateFriendCounts($uniID))
+				{
+					$pass = self::updateFriendCounts($friendID);
+				}
+			}
 		}
 		
 		if($pass)
@@ -271,6 +254,54 @@ abstract class AppFriends {
 		}
 		
 		return Database::endTransaction($pass);
+	}
+	
+	
+/****** Get the number of friends and followers you have ******/
+	public static function getFriendFollowCount
+	(
+		int $uniID			// <int> The UniID to get the friend and follower count of.
+	): array <int, int>					// RETURNS <int:int> an array of count values.
+	
+	// list($friends, $followers, $following) = AppFriends::getFriendFollowCount($uniID);
+	{
+		// Prepare Values
+		$friends = 0;
+		$followers = 0;
+		$following = 0;
+		
+		// Get the full list of clearance
+		$list = Database::selectMultiple("SELECT clearance FROM friends_list WHERE uni_id=?", array($uniID));
+		
+		foreach($list as $l)
+		{
+			// Add friends
+			if($l['clearance'] >= 4) { $friends++; continue; }
+			
+			// Add followers
+			if($l['clearance'] >= 2) { $followers++; }
+			
+			// Add following
+			if($l['clearance'] != 2) { $following++; }
+		}
+		
+		return array($friends, $followers, $following);
+	}
+	
+	
+/****** Update the friend counts for a user ******/
+	public static function updateFriendCounts
+	(
+		int $uniID			// <int> The UniID to update the proper friend and follower counts for.
+	): bool					// RETURNS <bool> TRUE on success, FALSE on failure.
+	
+	// AppFriends::updateFriendCounts($uniID);
+	{
+		// Pull the count list
+		list($friends, $followers, $following) = self::getFriendFollowCount($uniID);
+		
+		// Update the counts
+		return Database::query("UPDATE social_data SET friends=?, followers=?, following=? WHERE uni_id=? LIMIT 1", array($friends, $followers, $following, $uniID));
 	}
 	
 	
@@ -426,10 +457,10 @@ abstract class AppFriends {
 			{
 				if($pass = Database::query("UPDATE friends_list SET clearance=? WHERE uni_id=? AND friend_id=? LIMIT 1", array(4, $friendID, $uniID)))
 				{
-					// Update the social data
-					if($pass = Database::query("UPDATE social_data SET friends=friends+1 WHERE uni_id=? LIMIT 1", array($uniID)))
+					// Update the friend counts
+					if($pass = self::updateFriendCounts($uniID))
 					{
-						$pass = Database::query("UPDATE social_data SET friends=friends+1 WHERE uni_id=? LIMIT 1", array($friendID));
+						$pass = self::updateFriendCounts($friendID);
 					}
 				}
 			}
@@ -475,7 +506,15 @@ abstract class AppFriends {
 	{
 		Database::startTransaction();
 		
-		$pass = Database::query("DELETE FROM friends_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID));
+		// Remove the friend request
+		if($pass = Database::query("DELETE FROM friends_requests WHERE (uni_id=? AND friend_id=?) or (uni_id=? AND friend_id=?) LIMIT 1", array($uniID, $friendID, $friendID, $uniID)))
+		{
+			// Update the friend counts
+			if($pass = self::updateFriendCounts($uniID))
+			{
+				$pass = self::updateFriendCounts($friendID);
+			}
+		}
 		
 		return Database::endTransaction($pass);
 	}

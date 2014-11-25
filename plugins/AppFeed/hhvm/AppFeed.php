@@ -60,7 +60,7 @@ abstract class AppFeed {
 			// Then cycle through posts, determine post engagement
 			
 			// Get your friends (in order of engagement value)
-			$friends = Database::selectMultiple("SELECT friend_id, clearance, engage_value FROM friends_list WHERE uni_id=? ORDER BY engage_value DESC LIMIT 300", array($uniID));
+			$friends = Database::selectMultiple("SELECT friend_id, clearance, engage_value FROM friends_list WHERE uni_id=? AND clearance != ? ORDER BY engage_value DESC LIMIT 300", array($uniID, 2));
 			
 			$friendCount = count($friends);
 			$limitScan = ($friendCount < 10 ? 5 : ($friendCount < 50 ? 4 : ($friendCount < 100 ? 3 : 2)));
@@ -118,10 +118,17 @@ abstract class AppFeed {
 	public static function get
 	(
 		int $uniID			// <int> The Uni-ID to get the feed for.
+	,	int $sortType = 0	// <int> 0 will sort by most relevant, 1 sorts by most recent
 	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> a list of posts from your feed.
 	
 	// $posts = AppFeed::get($uniID);
 	{
+		// If you're sorting by most recent posts
+		if($sortType == 1)
+		{
+			return Database::selectMultiple("SELECT p.*, u.handle, u.display_name FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY post_id DESC", array($uniID));
+		}
+		
 		return Database::selectMultiple("SELECT p.*, u.handle, u.display_name FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY engage_value DESC", array($uniID));
 	}
 	

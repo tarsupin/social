@@ -53,9 +53,9 @@
 
 #post-bottom { overflow:hidden; }
 
-#post-bottom-left { font-size: 20px; color:#ea6060; padding-top:8px; padding-bottom:10px; display:inline-block; }
+#post-bottom-left { font-size: 20px; color:#237eee; padding-top:8px; padding-bottom:10px; display:inline-block; }
 #post-bottom-left span { padding:5px 10px 5px 10px; border-right:1px solid #d8d8d8; }
-#post-bottom-left a { color:#ea6060; }
+#post-bottom-left a, #post-bottom-left a:visited { color:#237eee; }
 #post-bottom-left a:first-child { border-left:1px solid #d8d8d8; }
 
 #post-bottom-right { float:right; margin-right:15px; }
