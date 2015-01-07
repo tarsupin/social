@@ -316,7 +316,7 @@ abstract class AppFriends {
 	
 	// $followers = AppFriends::getFollowerList($uniID, [$page], [$numRows], [$byEngagement]);
 	{
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?)" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?)" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3));
 	}
 	
 	
@@ -331,7 +331,7 @@ abstract class AppFriends {
 	
 	// $followers = AppFriends::getFollowingList($uniID, [$page], [$numRows], [$byEngagement]);
 	{
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?) " . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 1, 3));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?) " . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 1, 3));
 	}
 	
 	
@@ -346,7 +346,7 @@ abstract class AppFriends {
 	
 	// $friends = AppFriends::getFriendList($uniID, [$page], [$numRows], [$byEngagement]);
 	{
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance >= ?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : "") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance >= ?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4));
 	}
 	
 	

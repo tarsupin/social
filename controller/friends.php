@@ -19,9 +19,6 @@ $friends = AppFriends::getFriendList(Me::$id, $currentPage, $resultsPerPage);
 // Get the list of friend requests
 $requests = AppFriends::getRequestList(Me::$id, 0, 4);
 
-// Prepare Values
-$socialURL = URL::unifaction_social();
-
 // Set the active user to yourself
 You::$id = Me::$id;
 You::$handle = Me::$vals['handle'];
@@ -43,31 +40,32 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content" class="content-open">' . Alert::display();
-
-echo '
-<style>
-	.friend-block { display:inline-block; padding:12px; text-align:center; background-color:#eeeeee; border-radius:6px; font-size:0.8em; }
-</style>
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Add New Friends</div>
+	<div class="inner-box" style="overflow:visible;">
 
 <script>
 function UserHandle(handle)
 {
 	window.location = "/friends/send-request?handle=" + handle;
 }
-</script>
-
-<div>
-<h3>Add New Friends</h3>';
+</script>';
 
 echo Search::searchBarUserHandle("userHandle", "", "search-add-user", "", "", "search", "Search for friends . . .") . "<br />";
+
+echo '
+	</div>
+</div>';
 
 // Display your friend requests, if applicable
 if(count($requests) > 0)
 {
 	echo '
-	<div style="margin-bottom:22px;">
-	<h3>Friend Requests</h3>';
+<div class="overwrap-box">
+	<div class="overwrap-line">Friend Requests</div>
+	<div class="inner-box">';
 	
 	if(count($requests) > 3)
 	{
@@ -86,19 +84,22 @@ if(count($requests) > 0)
 		<div class="friend-block">
 			<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 			<br />' . $request['display_name'] . '
-			<br /><a href="' . $socialURL . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
+			<br /><a href="/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 			<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
 			<br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
 		</div>';
 	}
 	
 	echo '
-	</div>';
+	</div>
+</div>';
 }
 
 // Display each of your friends
 echo '
-<h3>Friends List</h3>';
+<div class="overwrap-box">
+	<div class="overwrap-line">Friends List</div>
+	<div class="inner-box">';
 
 if(count($friends) > 0)
 {
@@ -108,40 +109,34 @@ if(count($friends) > 0)
 		<div class="friend-block">
 			<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image((int) $friend['uni_id'], "large") . '" /></a>
 			<br />' . $friend['display_name'] . '
-			<br /><a href="' . $socialURL . '/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
+			<br /><a href="/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
 			<br /><br /><a href="/friends/edit?handle=' . $friend['handle'] . '"><span class="icon-pencil"></span> Edit</a>
 		</div>';
 	}
 }
 else
 {
-	echo "There are no friends in your friends list currently.";
+	echo "<p>There are no friends in your friends list currently.</p>";
 }
+
+echo '
+	</div>
+</div>';
 
 // Prepare the pagination
 $page = new Pagination((int) $social->data['friends'], $resultsPerPage, $currentPage);
 
 if($page->highestPage > 1)
 {
-	echo '<div style="margin-top:12px;">Page: ';
+	echo '<div class="thread-tline" style="text-align:right;">Page: ';
 	
 	foreach($page->pages as $nextPage)
 	{
-		if($nextPage == $page->currentPage)
-		{
-			echo '<span style="padding:2px 4px 2px 4px; background-color:#c0c0c0;">' . $nextPage . '</span> ';
-		}
-		else
-		{
-			echo '<span><a href="/friends?page=' . $nextPage . '" style="padding:2px 4px 2px 4px; background-color:#e0e0e0;">' . $nextPage . '</a></span> ';
-		}
+		echo '<a class="thread-page' . ($nextPage == $page->currentPage ? ' thread-page-active' : '') . '" href="/friends?page=' . $nextPage . '"><span>' . $nextPage . '</span></a> ';
 	}
 	
 	echo '</div>';
 }
-
-echo '
-</div>';
 
 echo '
 </div>';

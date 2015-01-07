@@ -15,9 +15,6 @@ if(isset($_GET['handle']))
 		// Recognize Integer
 		$friend['uni_id'] = (int) $friend['uni_id'];
 		
-		// Get details about the friend request
-		$clearance = AppFriends::getRequest(Me::$id, $friend['uni_id']);
-		
 		// Check if there were any updates run
 		if($link = Link::clicked())
 		{
@@ -26,7 +23,7 @@ if(isset($_GET['handle']))
 			{
 				if(AppFriends::approve(Me::$id, $friend['uni_id']))
 				{
-					Alert::saveSuccess("Friend Approved", "You have approved " . $friend['handle'] . "'s friend request.");
+					Alert::success("Friend Approved", "You have approved " . $friend['handle'] . "'s friend request.");
 				}
 				else
 				{
@@ -39,7 +36,7 @@ if(isset($_GET['handle']))
 			{
 				if(AppFriends::deny(Me::$id, $friend['uni_id']))
 				{
-					Alert::saveSuccess("Friend Approved", "You have denied " . $friend['handle'] . "'s friend request.");
+					Alert::success("Friend Approved", "You have denied " . $friend['handle'] . "'s friend request.");
 				}
 			}
 		}
@@ -51,10 +48,11 @@ if(isset($_GET['handle']))
 }
 
 // Get the list of friend requests
-$requests = AppFriends::getRequestList(Me::$id, 0, 20);
+$currentPage = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+$requests = AppFriends::getRequestList(Me::$id, $currentPage-1, 20);
 
 // Get the list of friend requests sent out
-$requestsSent = AppFriends::getRequestSentList(Me::$id, 0, 20);
+$requestsSent = AppFriends::getRequestSentList(Me::$id, $currentPage-1, 20);
 
 // Set the active user to yourself
 You::$id = Me::$id;
@@ -77,17 +75,13 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content" class="content-open">' . Alert::display();
-
-echo '
-<style>
-	.friend-block { display:inline-block; padding:12px; text-align:center; background-color:#eeeeee; border-radius:6px; }
-</style>';
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Friend Requests</div>
+	<div class="inner-box">';
 
 // Display your friend requests
-echo '
-<h3>Friend Requests</h3>';
-
 if(count($requests) == 0)
 {
 	echo '<p>There are no friend requests open right now.</p>';
@@ -106,9 +100,15 @@ foreach($requests as $request)
 	</div>';
 }
 
+echo '
+	</div>
+</div>';
+
 // Display your friend requests sent out
 echo '
-<h3 style="margin-top:22px;">Your Pending Friend Requests</h3>';
+<div class="overwrap-box">
+	<div class="overwrap-line">Your Pending Friend Requests</div>
+	<div class="inner-box">';
 
 if(count($requestsSent) == 0)
 {
@@ -124,6 +124,26 @@ foreach($requestsSent as $request)
 		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
 		<br /><a href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 	</div>';
+}
+
+echo '
+	</div>
+</div>';
+
+// Prepare the pagination
+$totalRequests = (int) Database::selectValue("SELECT COUNT(*) as totalNum FROM friends_requests WHERE uni_id=?", array(Me::$id));
+$page = new Pagination($totalRequests, 20, $currentPage);
+
+if($page->highestPage > 1)
+{
+	echo '<div class="thread-tline" style="text-align:right;">Page: ';
+	
+	foreach($page->pages as $nextPage)
+	{
+		echo '<a class="thread-page' . ($nextPage == $page->currentPage ? ' thread-page-active' : '') . '" href="/friends/requests?page=' . $nextPage . '"><span>' . $nextPage . '</span></a> ';
+	}
+	
+	echo '</div>';
 }
 
 echo '

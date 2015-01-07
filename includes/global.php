@@ -50,5 +50,11 @@ WidgetLoader::add("UniFactionMenu", 10, '
 	</ul>
 </div>');
 
+// Complete page title (if available)
+if(isset($config['pageTitle']) and $config['pageTitle'] != "")
+{
+	$config['pageTitle'] = $config['site-name'] . " > " . $config['pageTitle'];
+}
+
 // Base style sheet for this site
-Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-3col.css" />');
+Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-2col.css" />');

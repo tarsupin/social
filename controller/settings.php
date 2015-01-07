@@ -69,6 +69,10 @@ if(Form::submitted("upl-social-header"))
 You::$id = Me::$id;
 You::$handle = Me::$vals['handle'];
 
+/****** Page Configuration ******/
+$config['canonical'] = "/settings";
+$config['pageTitle'] = "Settings";		// Up to 70 characters. Use keywords.
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -81,18 +85,25 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 // The Main Display
 echo '
-<div id="content" class="content-open">' . Alert::display() . '';
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Upload your Header Photo</div>
+	<div class="inner-box">';
 
 // Create the image upload form
 echo '
-<h3>Upload your Header Photo</h3>
-
 <form class="uniform" action="/settings" method="post" enctype="multipart/form-data">' . Form::prepare("upl-social-header") . '
 	
-	Upload Image: <input type="file" name="image">
-	
-	<h3 style="margin-top:22px;">Your Privacy Settings</h3>
-	
+	Upload Image: <input type="file" name="image"> (max 4200x3500, 3MB)
+
+</form>
+	</div>
+</div>
+<div class="overwrap-box">
+	<div class="overwrap-line">Your Privacy Settings</div>
+	<div class="inner-box">
+<form class="uniform" action="/settings" method="post">' . Form::prepare("upl-social-header") . '
 	<p>
 		<strong>Who is allowed to view my page?</strong><br />
 		<select name="access">' . str_replace('value="' . $social->data['perm_access'] . '"', 'value="' . $social->data['perm_access'] . '" selected', '
@@ -120,8 +131,15 @@ echo '
 		</select>
 	</p>
 	
-	<h3 style="margin-top:22px;">Feed Settings</h3>
-	
+	<input type="submit" name="submit" value="Update Privacy Settings">
+
+</form>
+	</div>
+</div>
+<div class="overwrap-box">
+	<div class="overwrap-line">Feed Settings</div>
+	<div class="inner-box">
+<form class="uniform" action="/settings" method="post">' . Form::prepare("upl-social-header") . '
 	<p>
 		<strong>How should I sort the feed?</strong><br />
 		<select name="feed_sort">' . str_replace('value="' . $social->data['feed_sort'] . '"', 'value="' . $social->data['feed_sort'] . '" selected', '
@@ -130,10 +148,10 @@ echo '
 		</select>
 	</p>
 	
-	<input type="submit" name="submit" value="Update My Page">
+	<input type="submit" name="submit" value="Update Feed Settings">
 	 
 </form>
-
+	</div>
 </div>';
 
 // Display the Footer

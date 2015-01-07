@@ -5,13 +5,59 @@
 
 
 
+/*****************************
+****** General Elements ******
+*****************************/
+
+.overwrap-box { background-color:#d5e4ed; border:solid 1px #c0c0c0; border-radius:4px; padding:6px; margin-bottom:7px; }
+.inner-box { background-color:#e8eef1; border:solid 1px #c0c0c0; border-radius:4px; padding:6px; margin-top:6px; width:100%; overflow:hidden; }
+.overwrap-line { padding:0px 2px 0px 2px; font-weight:bold; font-size:1.2em; }
+
+.spacer { height:50px; }
+
+.thread-tline { background-color:#77b5db; border-radius:5px; padding:4px; margin-bottom:7px; color:white; font-weight:bold; overflow:hidden; }
+#content .thread-tline a { color:white !important; }
+.thread-tline a:hover { text-decoration:underline !important; }
+
+.thread-page { background-color:#77B5DB; padding:2px 4px 2px 4px; border-radius:4px; }
+.thread-tline .thread-page:hover { text-decoration:none !important; background-color:#ea6060 !important; }
+.thread-page.thread-page-active { background-color:#ea6060 !important; }
+
+.thread-post { height:100%; width:100%; overflow:hidden; border:solid 1px #c0c0c0; border-radius:5px; background-color:#e8eef1; margin-bottom:6px; }
+
+
+/*************************
+****** Friends Page ******
+*************************/
+
+.friend-block
+{
+	display:inline-block;
+	margin-bottom:4px;
+	margin-right:4px;
+	padding:5px;
+	position:relative;
+	text-align:center;
+	border-radius:6px;
+	font-size:0.8em;
+	background-color:#c7e0ee;	
+	background-image:-linear-gradient(#c7e0ee, #e8eef1);
+	background-image:-moz-linear-gradient(top, #c7e0ee, #e8eef1);
+	background-image:-ms-linear-gradient(top, #c7e0ee, #e8eef1);
+	background-image:-o-linear-gradient(#c7e0ee, #e8eef1);
+	background-image:-webkit-gradient(linear, left top, left bottom, from(#c7e0ee), to(#e8eef1));
+	background-image:-webkit-linear-gradient(top, #c7e0ee, #e8eef1);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c7e0ee', endColorstr='#e8eef1');
+}
+
+
 /************************
 ****** Social Page ******
 ************************/
 
 /* The Header Photo */
 #social-wrap { box-shadow: 3px 3px 3px #888888; margin-bottom:10px; }
-#social-header { position:relative; width:100%; margin:0px; padding:0px;  }
+#social-header { position:relative; width:100%; margin:0px; padding:0px; }
 #social-header-img { display:block; width:100%; margin:0px; padding:0px; }
 #social-propic { position:absolute; left:4%; top:10%; width:20%; }
 #social-propic>img { width:100%; height:auto; border:10px solid rgba(255, 255, 255, 0.5); border-radius:50%; }
@@ -31,7 +77,7 @@
 
 /* Follow Button */
 .follow-button { position:absolute; border-radius:6px; font-size: 25px; color:white; background-color:#ea6060; border:1px solid white; text-transform:uppercase; vertical-align:middle; }
-.follow-button>a { display:block; padding:6px 14px 6px 14px; height:20px; line-height:24px; color:white !important; vertical-align:middle; }
+.follow-button>a { display:block; padding:6px 14px 6px 14px; height:32px; line-height:24px; color:white !important; vertical-align:middle; }
 .follow-button:hover { background-color:white; color:#ea6060; border:1px solid #ea6060; }
 .follow-button:hover>a { color:#ea6060 !important; }
 .follow-button.clicked { background-color:white; border:1px solid #ea6060; }
@@ -48,7 +94,7 @@
 #post-right { margin-left:85px; }
 
 #post-top { width:100%; }
-#post-textwrap { margin-right:18px; padding:8px 2px 8px 0px; }
+#post-textwrap { padding:8px 2px 8px 0px; }
 #post-textwrap>textarea { width:100%; resize:vertical; font-size:16px; font-family:Arial; padding:4px; }
 
 #post-bottom { overflow:hidden; }
@@ -58,7 +104,7 @@
 #post-bottom-left a, #post-bottom-left a:visited { color:#237eee; }
 #post-bottom-left a:first-child { border-left:1px solid #d8d8d8; }
 
-#post-bottom-right { float:right; margin-right:15px; }
+#post-bottom-right { float:right; }
 
 
 /*********************
@@ -67,7 +113,7 @@
 
 #post-feed { border-bottom:solid 1px #c0c0c0; }
 
-.comment { min-height:60px; border:1px solid #c0c0c0; border-bottom:none; background-color:white; padding-top:18px; overflow:hidden; }
+.comment { min-height:60px; border:1px solid #c0c0c0; border-bottom:none; background-color:#e8eef1; padding-top:18px; overflow:hidden; }
 
 .comment-left { float:left; width:65px; padding:0px 5px 10px 10px; }
 .comment-right { margin-left: 90px; }

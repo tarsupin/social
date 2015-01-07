@@ -8,7 +8,7 @@ if(!Me::$loggedIn)
 
 /****** Page Configuration ******/
 $config['canonical'] = "/following";
-$config['pageTitle'] = "Social Following";		// Up to 70 characters. Use keywords.
+$config['pageTitle'] = "Who I'm Following";		// Up to 70 characters. Use keywords.
 
 // Set the active user to yourself
 You::$id = Me::$id;
@@ -27,7 +27,11 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 // Display the Page
 echo '
 <div id="panel-right"></div>
-<div id="content" class="content-open">' . Alert::display();
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Who I\'m Following</div>
+	<div class="inner-box">';
 
 // Run the auto-scrolling script
 echo '
@@ -43,20 +47,13 @@ echo '
 	function afterAutoScroll() {
 		// picturefill();
 	}
-</script>';
-
-echo '
-<style>
-.follower { display:inline-block; padding:4px; text-align:center; font-size:0.8em; }
-</style>
+</script>
 
 <div id="follower-list">';
 
 // People who I'm following
-$followList = AppFriends::getFollowingList(Me::$id);
-
-echo '
-<h3>People I\'m Following</h3>';
+$currentPage = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+$followList = AppFriends::getFollowingList(Me::$id, $currentPage, 20);
 
 // Cycle through the list
 foreach($followList as $userData)
@@ -64,11 +61,30 @@ foreach($followList as $userData)
 	$userData['uni_id'] = (int) $userData['uni_id'];
 	
 	echo '
-	<div class="follower"><a href="/' . $userData['handle'] . '"><img src="' . ProfilePic::image($userData['uni_id'], "large") . '" /></a><br />@' . $userData['handle'] . '</div>';
+	<div class="friend-block"><a href="/' . $userData['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($userData['uni_id'], "large") . '" /></a><br />@' . $userData['display_name'] . '<br /><a href="/' . $userData['handle'] . '">@' . $userData['handle'] . '</a></div>';
 }
 
 echo '
 </div>
+	</div>
+</div>';
+
+// Prepare the pagination
+$social = new AppSocial(Me::$id);
+$page = new Pagination((int) $social->data['following'], 20, $currentPage);
+if($page->highestPage > 1)
+{
+	echo '<div class="thread-tline" style="text-align:right;">Page: ';
+	
+	foreach($page->pages as $nextPage)
+	{
+		echo '<a class="thread-page' . ($nextPage == $page->currentPage ? ' thread-page-active' : '') . '" href="/friends/following?page=' . $nextPage . '"><span>' . $nextPage . '</span></a> ';
+	}
+	
+	echo '</div>';
+}
+
+echo '
 </div>';
 
 // Display the Footer

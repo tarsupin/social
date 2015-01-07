@@ -192,7 +192,7 @@ class AppSocial {
 	// $postID = AppSocial::createPost($socialID, $posterID, $clearance, $attachmentID, $message, [$link], [$whenToPost], [$hashData], [$origHandle]);
 	{
 		// Prepare Values
-		$message = (string) substr($message, 0, 1000);
+		$message = (string) substr($message, 0, 255);
 		$whenToPost = ($whenToPost == 0 ? time() : $whenToPost + 0);
 		
 		// Create the Post
@@ -216,12 +216,28 @@ class AppSocial {
 				Comment::process($posterID, $message, $link, $socialID, $hashData);
 			}
 			
+			$userData = User::get($posterID, "handle");
+			
 			// Post a notification to someone's wall you're posting on
-			if($socialID != Me::$id)
-			{
-				$userData = User::get($posterID, "handle");
-				
+			if($socialID != $posterID)
+			{				
 				Notifications::create($socialID, $link, "@" . $userData['handle'] . " has posted on your wall.");
+			}
+			// Post notifications to friends
+			else
+			{
+				$social = new AppSocial($posterID);
+				$friendCount = (int) $social->data['friends'];
+				
+				// Search through the list of friends
+				$friendList = AppFriends::getFriendList($posterID, 1, $friendCount);
+				$uniIDList = array();
+				foreach($friendList as $friend)
+				{
+					$uniIDList[] = (int) $friend['uni_id'];
+				}
+				
+				Notifications::createMultiple($uniIDList, $link, "@" . $userData['handle'] . " has posted a status.");
 			}
 			
 			return $postID;
@@ -340,7 +356,7 @@ class AppSocial {
 				<div class="comment-left"><a href="/' . $post['handle'] . '"><img class="circimg" src="' . ProfilePic::image($post['poster_id'], "medium") . '"></a></div>
 				<div class="comment-right">
 					<div class="comment-top">
-						<div class="comment-data"><span class="hide-600">' . $post['display_name'] . '</span> <a class="handle" href="/' . $post['handle'] . '">@' . $post['handle'] . '</a></div>
+						<div class="comment-data"><span class="hide-600">' . (lcfirst($post['display_name']) != lcfirst($post['handle']) ? $post['display_name'] . ' ' : '') . '</span> <a href="/' . $post['handle'] . '">@' . $post['handle'] . '</a></div>
 						<div class="comment-time-post">' . Time::fuzzy($post['date_posted']) . '</div>
 					</div>
 					<div class="comment-message">';
@@ -417,7 +433,8 @@ class AppSocial {
 				}
 			}
 			
-			echo nl2br(Comment::showSyntax($post['post'])) . '</div>
+			//$post['post'] = Comment::showSyntax($post['post']);
+			echo html_entity_decode(nl2br(UniMarkup::parse($post['post']))) . '</div>
 				</div>
 				<div class="comment-wrap"><div class="extralinks"><a href="javascript:positionReplyBox(\'' . $post['handle'] . '\', ' . $post['id'] . ');"><span class="icon-comments"></span> Comments (' . $post['has_comments'] . ')</a>';
 			
@@ -426,7 +443,7 @@ class AppSocial {
 				echo '<a href="/' . You::$handle . '?delete=' . $post['id'] . '&' . self::$linkProtect . '"><span class="icon-circle-close"></span> Delete</a>';
 			}
 			
-			echo '<a href="#">. . . More</a></div></div>';
+			echo '</div></div>';
 			
 			// Reply Box
 			echo '

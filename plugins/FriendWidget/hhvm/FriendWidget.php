@@ -34,26 +34,28 @@ abstract class FriendWidget {
 		else
 		{
 			// Get a Friend Count
-			$friendCount = (int) Database::selectValue("SELECT COUNT(*) as totalNum FROM users_friends WHERE uni_id=?", array($uniID));
+			$social = new AppSocial($uniID);
+			$friendCount = (int) $social->data['friends'];
 			
 			// Search through the list of friends
-			$friendList = Database::selectMultiple("SELECT fl.friend_id as id, u.handle FROM users_friends fl INNER JOIN users u ON fl.friend_id=u.uni_id WHERE fl.uni_id=? ORDER BY RAND() LIMIT 9", array($uniID));
+			$friendList = AppFriends::getFriendList($uniID, 1, $friendCount);
 			
-			$duration = count($friendList) * count($friendList) * 900; // 15 minutes * $friendCount^2
+			$duration = $friendCount * $friendCount * 900; // 15 minutes * $friendCount^2
 			
 			Cache::set("friends:" . $uniID, json_encode(array($friendCount, $friendList)), $duration);
 		}
-		
+
 		$len = count($friendList);
 		
-		// Make sure you have at least three friends to list
+		/*// Make sure you have at least three friends to list
 		if($len < 3) { return ''; }
 		
 		// If you have a number of friends that aren't divisible by three, reduce to nearest three
 		while($len % 3 !== 0)
 		{
 			array_shift($friendList);
-		}
+			$len--;
+		}*/
 		
 		$html = '
 		<!-- My Friends -->
@@ -66,7 +68,7 @@ abstract class FriendWidget {
 		// Loop through each friend and add them to the list
 		foreach($friendList as $friend)
 		{
-			$html .= '<a href="/' . $friend['handle'] . '"><img src="' . ProfilePic::image((int) $friend['id'], "large") . '" /></a>';
+			$html .= '<a href="/' . $friend['handle'] . '"><img src="' . ProfilePic::image((int) $friend['uni_id'], "large") . '" /></a>';
 		}
 		
 		$html .= '

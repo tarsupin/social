@@ -49,7 +49,7 @@ abstract class AppComment {
 	
 	// $comments = AppComment::getListAJAX($postID, $startNum, $showNum, "DESC");
 	{
-		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted, u.handle, u.display_name FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id INNER JOIN users u ON c.uni_id=u.uni_id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 0), array($postID));
+		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted, u.handle, u.display_name FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id INNER JOIN users u ON c.uni_id=u.uni_id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 1), array($postID));
 	}
 	
 	
@@ -92,9 +92,16 @@ abstract class AppComment {
 			}
 			
 			// If it's not your wall, get the post data to prepare a notification
-			if($toUniID != Me::$id)
+			if($toUniID != $uniID)
 			{
-				Notifications::create($toUniID, $link, "@" . Me::$vals['handle'] . " has replied to a comment on your wall.");
+				$userData = User::get($uniID, "handle");
+				Notifications::create($toUniID, $link, "@" . $userData['handle'] . " has commented on a post on your wall.");
+				
+				$postData = AppSocial::getPostDirect($postID);
+				if($postData['poster_id'] != $toUniID && $postData['poster_id'] != $uniID)
+				{
+					Notifications::create($postData['poster_id'], $link, "@" . $userData['handle'] . " has commented on your post on @" . $userData['handle'] . "'s wall.");
+				}
 			}
 			
 			return $commentID;

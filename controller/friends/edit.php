@@ -57,6 +57,10 @@ if(Form::submitted("friend-update"))
 You::$id = Me::$id;
 You::$handle = Me::$vals['handle'];
 
+/****** Page Configuration ******/
+$config['canonical'] = "/friends/edit";
+$config['pageTitle'] = 'Edit Friend: @' . $friend['handle'];		// Up to 70 characters. Use keywords.
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -69,21 +73,19 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content" class="content-open">' . Alert::display();
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Edit Friend: @' . $friend['handle'] . '</div>
+	<div class="inner-box">';
 
 echo '
-<style>
-	#friend-block { display:inline-block; padding:12px; text-align:center; }
-</style>
-
-<h3>Edit Friend: ' . $friend['display_name'] . ' (@' . $friend['handle'] . ')</h3>
-
 <form class="uniform" action="/friends/edit?handle=' . $friend['handle'] . '" method="post">' . Form::prepare('friend-update') . '
-<div id="friend-block">
+<div class="friend-block">
 	<p>
 		<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($friend['uni_id'], "large") . '" /></a>
-		<br /><a href="' . URL::unifaction_social() . '">' . $friend['display_name'] . '</a>
-		<br /><a href="' . URL::unifaction_social() . '">@' . $friend['handle'] . '</a>
+		<br />' . $friend['display_name'] . '
+		<br /><a href="/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
 		
 		<div>
 			Permissions:<br /><select name="clearance">' . str_replace('value="' . $clearance . '"', 'value="' . $clearance . '" selected', '
@@ -98,6 +100,8 @@ echo '
 </form>';
 
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

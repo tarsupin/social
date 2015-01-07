@@ -6,6 +6,8 @@ if(!isset($_POST['user']) or !isset($_POST['postID']))
 	exit;
 }
 
+$_POST['page'] = (isset($_POST['page']) ? (int) $_POST['page'] : 1);
+
 // Prepare Values
 $postID = (int) $_POST['postID'];
 
@@ -27,19 +29,26 @@ $social = new AppSocial((int) $postData['poster_id']);
 if($social->canAccess)
 {
 	$comments = array();
+	$hasmore = 0;
 	
 	// Show Comments
 	if($postData['has_comments'] > 0)
 	{
 		// Get Comments
-		$comments = AppComment::getListAJAX((int) $postData['id'], 1, 3, "DESC");
+		$comments = AppComment::getListAJAX((int) $postData['id'], $_POST['page'], 3, "DESC");
 		
 		foreach($comments as $key => $val)
 		{
 			$comments[$key]["img"] = ProfilePic::image((int) $comments[$key]['uni_id'], "small");
+			$comments[$key]["date_posted"] = Time::fuzzy((int) $comments[$key]["date_posted"]);
 		}
 		
 		$comLen = count($comments);
+		if($comLen > 3)
+		{
+			$hasmore = 1;
+			array_pop($comments);
+		}
 		
 		// Reverse the order (since you're providing the last three)
 		if($comLen > 1)
@@ -55,5 +64,5 @@ if($social->canAccess)
 		}
 	}
 	
-	echo json_encode(array("postID" => $postID, "commentData" => $comments)); exit;
+	echo json_encode(array("postID" => $postID, "commentData" => $comments, "page" => $_POST['page'], "user" => $_POST['user'], "hasmore" => $hasmore)); exit;
 }

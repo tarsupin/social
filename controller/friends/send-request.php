@@ -35,6 +35,11 @@ if(!$friendData)
 	header("Location: /friends"); exit;
 }
 
+// Set the active user
+You::$id = (int) $friendData['uni_id'];
+You::$handle = $friendData['handle'];
+You::$name = $friendData['display_name'];
+
 // Submit the Form
 if(Form::submitted("send-req-uf"))
 {
@@ -77,9 +82,9 @@ if(Form::submitted("send-req-uf"))
 	}
 }
 
-// Set the active user to yourself
-You::$id = Me::$id;
-You::$handle = Me::$vals['handle'];
+/****** Page Configuration ******/
+$config['canonical'] = "/friends/send-request";
+$config['pageTitle'] = "Send Friend Request";		// Up to 70 characters. Use keywords.
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -93,15 +98,21 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content" class="content-open">' . Alert::display();
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Send Friend Request</div>
+	<div class="inner-box">';
 
 echo '
-<h3>Would you like to send a friend request to <a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">' . $friendData['display_name'] . '</a> (<a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">@' . $friendData['handle'] . '</a>)?</h3>
+<p>Would you like to send a friend request to ' . $friendData['display_name'] . ' <a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">@' . $friendData['handle'] . '</a>?
+<br/><img class="circimg-large" src="' . ProfilePic::image(You::$id, "large") . '" /></p>
 
 <form class="uniform" action="/friends/send-request?id=' . $friendData['uni_id'] . '" method="post">' . Form::prepare("send-req-uf") . '
 <p><input type="submit" name="submit" value="Yes, Send Friend Request" /></p>
 </form>
 
+	</div>
 </div>';
 
 // Display the Footer

@@ -92,7 +92,11 @@ else if(count($feedPosts) == 0)
 // Display the feed
 if($feedPosts)
 {
+	echo '
+<div id="post-feed">';
 	$social->displayFeed($feedPosts);
+	echo '
+</div>';
 }
 
 
@@ -130,30 +134,53 @@ function commentReturn(response)
 	obj = JSON.parse(response);
 	console.log(obj);
 	commentData = obj.commentData;
+	page = obj.page;
 	
 	var a = document.getElementById("replies-" + obj.postID);
 	
-	// Check if there is any content
-	checkFull = a.innerHTML;
-	
 	var prepHTML = "";
 	
+	if(obj.hasmore == 1)
+	{
+		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'getComments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
+	}
+
 	for(var comment in commentData)
 	{
 		var c = commentData[comment];
 		
-		prepHTML += '<div style="margin-top:8px;"><div style="float:left; width:90px; text-align:right;"><img class="circimg-small" src="' + c.img + '" /></div><div style="margin-left:100px;"><span style="font-weight:bold">' + c.display_name + '</span> <a href="/' + c.handle + '">@' + c.handle + '</a><br />' + c.comment + '</div></form></div><div style="clear:both;"></div>';
+		prepHTML += '<div style="margin-top:8px;"><div style="float:left; width:90px; text-align:right;"><img class="circimg-small" src="' + c.img + '" /></div><div style="margin-left:100px;">';
+		
+		var display = c.display_name.charAt(0).toLowerCase();
+		var handle = c.handle.charAt(0).toLowerCase();
+		if(display != handle)
+		{
+			prepHTML += '<span style="font-weight:bold">' + c.display_name + '</span>';
+		}
+		prepHTML +=' <a href="/' + c.handle + '">@' + c.handle + '</a><div class="comment-time-post">' + c.date_posted + '</div><br />' + c.comment + '</div></form></div><div style="clear:both;"></div>';
 	}
-	
-	// Set the comments
-	a.innerHTML = prepHTML;
 	
 	// Get the universal social reply form
 	var b = document.getElementById("social_reply_box");
 	var c = document.getElementById("social_reply_input");
 	
+	// Set the comments
+	if(page == 1)
+	{
+		a.innerHTML = prepHTML;
+		a.appendChild(b);
+	}
+	else
+	{
+		var old = a.getElementsByClassName("thread-tline");
+		for(i=0; i<old.length; i++)
+		{
+			a.removeChild(old[i]);
+		}
+		a.innerHTML = prepHTML + a.innerHTML;		
+	}	
+	
 	// Position the reply box
-	a.appendChild(b);
 	c.value = obj.postID;
 }
 </script>

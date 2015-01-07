@@ -17,6 +17,10 @@ Metadata::addFooter('<script src="' . CDN . '/scripts/rome.js"></script>');
 Metadata::addHeader('<link rel="stylesheet" type="text/css" href="' . CDN . '/css/rome.css" />');
 Metadata::addFooter('<script>rome(dt, { min: "' . $getNow . '" , max: "' . $getMax . '", inputFormat: "YYYY-MM-DD HH:mm:ss"})</script>');
 
+/****** Page Configuration ******/
+$config['canonical'] = "/post";
+$config['pageTitle'] = "Advanced Post";		// Up to 70 characters. Use keywords.
+
 // Set the active user to yourself
 You::$id = Me::$id;
 You::$handle = Me::$vals['handle'];
@@ -32,7 +36,7 @@ if(Form::submitted("social-post-adv"))
 	$subImage = (isset($_FILES['image']) and $_FILES['image']['tmp_name'] != "") ? true : false;
 	$subVideo = (isset($_POST['video']) and $_POST['video'] != "") ? true : false;
 	
-	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, ($subImage or $subVideo) ? 300 : 1000);
+	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, 255);
 	FormValidate::variable("valid date", $_POST['post_date'], 0, 19, ":- ");
 	
 	if($subVideo) { FormValidate::url("Video URL", $_POST['video'], 1, 255); }
@@ -153,7 +157,7 @@ if(Form::submitted("social-post-adv"))
 			$clearance = isset($_POST['submit_public']) ? 0 : 4;
 			
 			// Create the post
-			$postID = AppSocial::createPost(Me::$id, Me::$id, $clearance, $attachmentID, $_POST['message'], "", strtotime($_POST['post_date']), $hashData);
+			$postID = AppSocial::createPost(Me::$id, Me::$id, $clearance, $attachmentID, $_POST['message'], URL::unifaction_social() . "/" . You::$handle, strtotime($_POST['post_date']), $hashData);
 			
 			// Display Success
 			Alert::saveSuccess("Post Successful", "You have successfully posted to your wall!");
@@ -164,7 +168,6 @@ if(Form::submitted("social-post-adv"))
 
 // Sanitize Values
 $_POST['message'] = isset($_POST['message']) ? Sanitize::text($_POST['message']) : "";
-$_POST['image'] = isset($_POST['image']) ? Sanitize::filepath($_POST['video']) : "";
 $_POST['video'] = isset($_POST['video']) ? Sanitize::url($_POST['video']) : "";
 $_POST['post_date'] = (isset($_POST['post_date'])) ? $_POST['post_date'] : $getNow;
 
@@ -178,20 +181,21 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 // The Main Display
 echo '
 <div id="panel-right"></div>
-<div id="content" class="content-open">' . Alert::display();
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Create a Wall Post</div>
+	<div class="inner-box">';
 
 echo '
-<h3>Create a Wall Post</h3>
-
-<div style="margin-top:12px;">
 <form class="uniform" action="/post" method="post" enctype="multipart/form-data">' . Form::prepare("social-post-adv") . '
-	<p>
-		<textarea name="message" placeholder="Write your message here . . ." style="width:90%;" tabindex="10" autofocus>' . htmlspecialchars($_POST['message']) . '</textarea></p>';
+	' . UniMarkup::buttonLine() . '
+	<textarea id="core_text_box" name="message" placeholder="Enter your message here..." maxlength="255" style="resize:vertical; width:100%;" tabindex="10" autofocus>' . htmlspecialchars($_POST['message']) . '</textarea>';
 
 if(!isset($_GET['gen']) or $_GET['gen'] == "image")
 {
 	echo '
-	<p>Upload Image: <input type="file" name="image" value="' . $_POST['image'] . '"></p>';
+	<p>Upload Image: <input type="file" name="image"> (max 4200x3500, 3MB)</p>';
 }
 
 if(!isset($_GET['gen']) or $_GET['gen'] == "video")
@@ -202,11 +206,27 @@ if(!isset($_GET['gen']) or $_GET['gen'] == "video")
 
 echo '
 	<p>Post at: <input type="text" id="dt" name="post_date" class="input" value="' . $_POST['post_date'] . '" size="25"></p>
-	<p><input type="submit" name="submit_friends" value="Post to Friends" class="button" /> <input type="submit" name="submit_public" value="Public Post" class="button" /></p>
+	<p><input type="button" value="Preview" onclick="previewPost();"/> <input type="submit" name="submit_friends" value="Post to Friends" class="button" /> <input type="submit" name="submit_public" value="Public Post" class="button" /></p>
 </form>
-</div>
 
-</div>';
+	</div>
+<div id="preview" class="thread-post" style="display:none; padding:4px; margin-top:10px;"></div>
+</div>
+</div>
+<script>
+function previewPost()
+{
+	var text = encodeURIComponent(document.getElementById("core_text_box").value);
+	getAjax("", "preview-post", "parse", "body=" + text);
+}
+function parse(response)
+{
+	if(!response) { response = ""; }
+	
+	document.getElementById("preview").style.display = "block";
+	document.getElementById("preview").innerHTML = response;
+}
+</script>';
 
 
 // Display the Footer
