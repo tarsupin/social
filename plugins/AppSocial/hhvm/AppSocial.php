@@ -228,13 +228,19 @@ class AppSocial {
 			{
 				$social = new AppSocial($posterID);
 				$friendCount = (int) $social->data['friends'];
+				$followerCount = (int) $social->data['followers'];
 				
 				// Search through the list of friends
 				$friendList = AppFriends::getFriendList($posterID, 1, $friendCount);
+				$followerList = AppFriends::getFollowerList($posterID, 1, $followerCount);
 				$uniIDList = array();
 				foreach($friendList as $friend)
 				{
 					$uniIDList[] = (int) $friend['uni_id'];
+				}
+				foreach($followerList as $follower)
+				{
+					$uniIDList[] = (int) $follower['uni_id'];
 				}
 				
 				Notifications::createMultiple($uniIDList, $link, "@" . $userData['handle'] . " has posted a status.");

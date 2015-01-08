@@ -41,6 +41,7 @@ if($social->canAccess)
 		{
 			$comments[$key]["img"] = ProfilePic::image((int) $comments[$key]['uni_id'], "small");
 			$comments[$key]["date_posted"] = Time::fuzzy((int) $comments[$key]["date_posted"]);
+			$comments[$key]["comment"] = html_entity_decode(nl2br(UniMarkup::parse($comments[$key]["comment"])));
 		}
 		
 		$comLen = count($comments);
