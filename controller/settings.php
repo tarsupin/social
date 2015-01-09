@@ -97,6 +97,7 @@ echo '
 <form class="uniform" action="/settings" method="post" enctype="multipart/form-data">' . Form::prepare("upl-social-header") . '
 	
 	Upload Image: <input type="file" name="image"> (max 4200x3500, 3MB)
+	<input type="submit" name="submit" value="Upload">
 
 </form>
 	</div>
