@@ -58,9 +58,10 @@ if(Form::submitted("upl-social-header"))
 	$social->data['perm_post'] = isset($_POST['post']) ? (int) $_POST['post'] : (int) $social->data['perm_post'];
 	$social->data['perm_comment'] = isset($_POST['comment']) ? (int) $_POST['comment'] : (int) $social->data['perm_comment'];
 	$social->data['feed_sort'] = isset($_POST['feed_sort']) ? (int) $_POST['feed_sort'] : (int) $social->data['feed_sort'];
+	$social->data['feed_notify'] = isset($_POST['feed_notify']) ? (int) $_POST['feed_notify'] : (int) $social->data['feed_notify'];
 	
 	// Update the page settings
-	Database::query("UPDATE social_data SET perm_access=?, perm_post=?, perm_comment=?, feed_sort=? WHERE uni_id=? LIMIT 1", array($social->data['perm_access'], $social->data['perm_post'], $social->data['perm_comment'], $social->data['feed_sort'], Me::$id));
+	Database::query("UPDATE social_data SET perm_access=?, perm_post=?, perm_comment=?, feed_sort=?, feed_notify=? WHERE uni_id=? LIMIT 1", array($social->data['perm_access'], $social->data['perm_post'], $social->data['perm_comment'], $social->data['feed_sort'], $social->data['feed_notify'], Me::$id));
 	
 	Alert::success("Settings Updated", "Your page settings have been updated.");
 }
@@ -145,6 +146,14 @@ echo '
 		<select name="feed_sort">' . str_replace('value="' . $social->data['feed_sort'] . '"', 'value="' . $social->data['feed_sort'] . '" selected', '
 			<option value="1">Sort by date (recent posts first)</option>
 			<option value="0">Sort by relevance</option>') . '
+		</select>
+	</p>
+	<p>
+		<strong>Should I receive notifications of new statuses?</strong><br />
+		If you choose the second option, you will not receive notifications of statuses that your friends or people you\'re following post. They can still be seen in your <a href="' . URL::unifaction_social() . '">feed</a>, and you will still receive notifications of other events.<br/>
+		<select name="feed_notify">' . str_replace('value="' . $social->data['feed_notify'] . '"', 'value="' . $social->data['feed_notify'] . '" selected', '
+			<option value="1">Notify me</option>
+			<option value="0">Do not notify me</option>') . '
 		</select>
 	</p>
 	

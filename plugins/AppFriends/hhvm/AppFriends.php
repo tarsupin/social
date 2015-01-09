@@ -312,10 +312,16 @@ abstract class AppFriends {
 	,	int $page = 1				// <int> The row number to start at.
 	,	int $numRows = 20			// <int> The number of rows to return.
 	,	bool $byEngagement = false	// <bool> Sort the list by engagement value.
+	,	bool $forNotification = false// <bool> Exclude people who don't wish to be notified if true.
 	): array <int, array<str, mixed>>							// RETURNS <int:[str:mixed]> the list of followers, array() on failure.
 	
-	// $followers = AppFriends::getFollowerList($uniID, [$page], [$numRows], [$byEngagement]);
+	// $followers = AppFriends::getFollowerList($uniID, [$page], [$numRows], [$byEngagement], [$forNotification]);
 	{
+		if($forNotification)
+		{
+			return Database::selectMultiple("SELECT f.friend_id FROM friends_list as f INNER JOIN social_data as s ON s.uni_id=f.friend_id WHERE f.uni_id=? AND f.clearance IN (?, ?) AND s.feed_notify=? LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3, 1));
+		}
+		
 		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?)" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3));
 	}
 	
@@ -342,10 +348,15 @@ abstract class AppFriends {
 	,	int $page = 1				// <int> The row number to start at.
 	,	int $numRows = 20			// <int> The number of rows to return.
 	,	bool $byEngagement = false	// <bool> Sort the list by engagement value.
+	,	bool $forNotification = false// <bool> Exclude people who don't wish to be notified if true.
 	): array <int, array<str, mixed>>							// RETURNS <int:[str:mixed]> the list of friends, array() on failure.
 	
-	// $friends = AppFriends::getFriendList($uniID, [$page], [$numRows], [$byEngagement]);
+	// $friends = AppFriends::getFriendList($uniID, [$page], [$numRows], [$byEngagement], [$forNotification]);
 	{
+		if($forNotification)
+		{
+			return Database::selectMultiple("SELECT f.friend_id FROM friends_list as f INNER JOIN social_data as s ON s.uni_id=f.friend_id WHERE f.uni_id=? AND f.clearance >= ? AND s.feed_notify=? LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4, 1));
+		}
 		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance >= ?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4));
 	}
 	

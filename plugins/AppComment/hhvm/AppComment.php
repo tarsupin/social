@@ -92,11 +92,10 @@ abstract class AppComment {
 			}
 			
 			// If it's not your wall, get the post data to prepare a notification
-			if($toUniID != $uniID)
+			if($toUniID != $uniID && $toUniID > 0)
 			{
 				$userData = User::get($uniID, "handle");
 				Notifications::create($toUniID, $link, "@" . $userData['handle'] . " has commented on a post on your wall.");
-				
 				$postData = AppSocial::getPostDirect($postID);
 				if($postData['poster_id'] != $toUniID && $postData['poster_id'] != $uniID)
 				{
