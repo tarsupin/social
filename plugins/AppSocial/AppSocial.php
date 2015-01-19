@@ -235,7 +235,7 @@ class AppSocial {
 				$notifyList = AppFriends::getNotificationList($posterID);
 				
 				$uniIDList = array();
-				foreach($notifyList as $key => $notify['clearance'])
+				foreach($notifyList as $notify)
 				{
 					if($clearance <= $notify['clearance'])
 					{
