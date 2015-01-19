@@ -275,7 +275,7 @@ abstract class AppFriends {
 			);
 			
 			// Run the API
-			$pass = Connect::to("sync_friends", "RemoveFriendAPI", $packet);
+			$pass = (bool) Connect::to("sync_friends", "RemoveFriendAPI", $packet);
 			
 			if($pass)
 			{
@@ -528,7 +528,7 @@ abstract class AppFriends {
 			);
 			
 			// Run the API
-			$pass = Connect::to("sync_friends", "AddFriendAPI", $packet);
+			$pass = (bool) Connect::to("sync_friends", "AddFriendAPI", $packet);
 		}
 		
 		$success = Database::endTransaction($pass);
