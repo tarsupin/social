@@ -49,7 +49,7 @@ abstract class AppComment {
 	
 	// $comments = AppComment::getListAJAX($postID, $startNum, $showNum, "DESC");
 	{
-		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted, u.handle, u.display_name FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id INNER JOIN users u ON c.uni_id=u.uni_id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 1), array($postID));
+		return Database::selectMultiple("SELECT c.id, c.uni_id, c.comment, c.date_posted, u.handle, u.display_name, u.role FROM comments_posts cp INNER JOIN comments c ON c.id=cp.id INNER JOIN users u ON c.uni_id=u.uni_id WHERE cp.post_id=? ORDER BY cp.id " . ($order == "ASC" ? "ASC" : "DESC") . " LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 1), array($postID));
 	}
 	
 	
@@ -67,6 +67,8 @@ abstract class AppComment {
 	// $commentID = AppComment::create($postID, $uniID, "Wow! Awesome!", $linkToComment, $toUniID, [$isPublic]);
 	{
 		Database::startTransaction();
+		
+		$link .= '#p' . $postID;
 		
 		// Insert the comment and structure
 		if(!$pass = Database::query("INSERT INTO `comments` (`uni_id`, `comment`, `date_posted`) VALUES (?, ?, ?)", array($uniID, $comment, time())))
@@ -94,7 +96,8 @@ abstract class AppComment {
 			// If it's not your wall, get the post data to prepare a notification
 			if($toUniID != $uniID && $toUniID > 0)
 			{
-				$userData = User::get($uniID, "handle");
+				if($uniID != Me::$id)	{ $userData['handle'] = Me::$vals['handle']; }
+				else 					{ $userData = User::get($uniID, "handle");}
 				Notifications::create($toUniID, $link, "@" . $userData['handle'] . " has commented on a post on your wall.");
 				$postData = AppSocial::getPostDirect($postID);
 				if($postData['poster_id'] != $toUniID && $postData['poster_id'] != $uniID)

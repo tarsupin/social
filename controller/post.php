@@ -167,7 +167,7 @@ if(Form::submitted("social-post-adv"))
 }
 
 // Sanitize Values
-$_POST['message'] = isset($_POST['message']) ? Sanitize::text($_POST['message']) : "";
+$_POST['message'] = isset($_POST['message']) ? Sanitize::text($_POST['message'], "/~") : "";
 $_POST['video'] = isset($_POST['video']) ? Sanitize::url($_POST['video']) : "";
 $_POST['post_date'] = (isset($_POST['post_date'])) ? $_POST['post_date'] : $getNow;
 

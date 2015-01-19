@@ -9,13 +9,13 @@ if(!Me::$loggedIn)
 // Get the Friend Data
 if(isset($_GET['id']))
 {
-	$friendData = User::get((int) $_GET['id'], "uni_id, handle, display_name");
+	$friendData = User::get((int) $_GET['id'], "uni_id, handle, display_name, role");
 }
 else if(isset($_GET['handle']))
 {
 	$_GET['handle'] = Sanitize::variable($_GET['handle']);
 	
-	$friendData = User::getDataByHandle($_GET['handle'], "uni_id, handle, display_name");
+	$friendData = User::getDataByHandle($_GET['handle'], "uni_id, handle, display_name, role");
 }
 else
 {
@@ -105,7 +105,7 @@ Alert::display() . '
 	<div class="inner-box">';
 
 echo '
-<p>Would you like to send a friend request to ' . $friendData['display_name'] . ' <a href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">@' . $friendData['handle'] . '</a>?
+<p>Would you like to send a friend request to ' . $friendData['display_name'] . ' <a ' . ($friendData['role'] != '' ? 'class="role-' . $friendData['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $friendData['handle'] . '">@' . $friendData['handle'] . '</a>?
 <br/><img class="circimg-large" src="' . ProfilePic::image(You::$id, "large") . '" /></p>
 
 <form class="uniform" action="/friends/send-request?id=' . $friendData['uni_id'] . '" method="post">' . Form::prepare("send-req-uf") . '

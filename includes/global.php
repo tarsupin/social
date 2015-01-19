@@ -27,7 +27,6 @@ else
 	<div class="panel-box">
 		<ul class="panel-slots">
 			<li class="nav-slot"><a href="/login">Login<span class="icon-circle-right nav-arrow"></span></a></li>
-			<li class="nav-slot"><a href="/">Find Friends<span class="icon-circle-right nav-arrow"></span></a></li>
 		</ul>
 	</div>');
 }
@@ -38,22 +37,38 @@ require(SYS_PATH . "/controller/includes/social-menu.php");
 // UniFaction Dropdown Menu
 $handle = Me::$loggedIn ? Me::$vals['handle'] : '';
 
-WidgetLoader::add("UniFactionMenu", 10, '
-<div class="menu-wrap hide-600">
-	<ul class="menu">
-		' . (isset($uniMenu) ? $uniMenu : '') . '
-		<li class="menu-slot' . ($url[0] == $handle ? " menu-active" : "") . '"><a href="/' . $handle . '">My Wall</a>
-		</li><li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
-		</li><li class="menu-slot' . ($url[0] == "post" ? " menu-active" : "") . '"><a href="/post">Adv. Post</a>
-		</li><li class="menu-slot' . ($url[0] == "settings" ? " menu-active" : "") . '"><a href="/settings">Settings</a>
-		</li><li class="menu-slot' . ($url[0] == "friends" ? " menu-active" : "") . '"><a href="/friends">Friends</a><ul><li class="dropdown-slot"><a href="/friends/requests">Friend Requests</a></li><li class="dropdown-slot"><a href="/friends/followers">My Followers</a></li><li class="dropdown-slot"><a href="/friends/following">Who I\'m Following</a></li></ul></li>
-	</ul>
-</div>');
+if(Me::$loggedIn)
+{
+	WidgetLoader::add("UniFactionMenu", 10, '
+	<div class="menu-wrap hide-600">
+		<ul class="menu">
+			' . (isset($uniMenu) ? $uniMenu : '') . '
+			<li class="menu-slot' . ($url[0] == $handle ? " menu-active" : "") . '"><a href="/' . $handle . '">My Wall</a>
+			</li><li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
+			</li><li class="menu-slot' . ($url[0] == "post" ? " menu-active" : "") . '"><a href="/post">Adv. Post</a>
+			</li><li class="menu-slot' . ($url[0] == "settings" ? " menu-active" : "") . '"><a href="/settings">Settings</a>
+			</li><li class="menu-slot' . ($url[0] == "friends" ? " menu-active" : "") . '"><a href="/friends">Friends</a><ul><li class="dropdown-slot"><a href="/friends/requests">Friend Requests</a></li><li class="dropdown-slot"><a href="/friends/followers">My Followers</a></li><li class="dropdown-slot"><a href="/friends/following">Who I\'m Following</a></li></ul></li>
+		</ul>
+	</div>');
+}
+else
+{
+	WidgetLoader::add("UniFactionMenu", 10, '
+	<div class="menu-wrap hide-600">
+		<ul class="menu">
+			<li class="dropdown-slot"><a href="/login">Login</a></li>
+		</ul>
+	</div>');
+}	
 
 // Complete page title (if available)
 if(isset($config['pageTitle']) and $config['pageTitle'] != "")
 {
 	$config['pageTitle'] = $config['site-name'] . " > " . $config['pageTitle'];
+}
+if(You::$id)
+{
+	$config['active-hashtag'] = You::$handle;
 }
 
 // Base style sheet for this site

@@ -22,6 +22,7 @@ abstract class FriendWidget {
 	public static function display
 	(
 		int $uniID			// <int> The uniID to find friends of.
+	,	string $handle			// <str> The handle of the user to find friends for.
 	): string					// RETURNS <str> the HTML for this widget.
 	
 	// FriendWidget::display($uniID);
@@ -44,31 +45,23 @@ abstract class FriendWidget {
 			
 			Cache::set("friends:" . $uniID, json_encode(array($friendCount, $friendList)), $duration);
 		}
-
-		$len = count($friendList);
-		
-		/*// Make sure you have at least three friends to list
-		if($len < 3) { return ''; }
-		
-		// If you have a number of friends that aren't divisible by three, reduce to nearest three
-		while($len % 3 !== 0)
-		{
-			array_shift($friendList);
-			$len--;
-		}*/
 		
 		$html = '
-		<!-- My Friends -->
-		<div class="side-module">
-			<div class="side-header">
-				<span class="icon-group"></span> <a href="/friends">Friends (' . $friendCount . ')</a>
+		<!-- My Friends -->	
+		<style>
+			.chat-inner img { height:32px; }
+		</style>
+		<div class="chat-wrap">
+			<div class="chat-header">
+				<span class="icon-group"></span> ' . (Me::$id == $uniID ? 'My' : '@' . $handle . '\'s') . ' Friends (' . $friendCount . ')
 			</div>
-			<div class="side-photos">';
+			<div class="chat-inner">';
 			
 		// Loop through each friend and add them to the list
 		foreach($friendList as $friend)
 		{
-			$html .= '<a href="/' . $friend['handle'] . '"><img src="' . ProfilePic::image((int) $friend['uni_id'], "large") . '" /></a>';
+			$html .= '
+				<a href="/' . $friend['handle'] . '"><img src="' . ProfilePic::image((int) $friend['uni_id']) . '" /></a>';
 		}
 		
 		$html .= '

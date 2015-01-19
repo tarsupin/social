@@ -84,7 +84,7 @@ if(count($requests) > 0)
 		<div class="friend-block">
 			<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 			<br />' . $request['display_name'] . '
-			<br /><a href="/' . $request['handle'] . '">@' . $request['handle'] . '</a>
+			<br /><a ' . ($request['role'] != '' ? 'class="role-' . $request['role'] . '" ' : '') . 'href="/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 			<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
 			<br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
 		</div>';
@@ -109,7 +109,7 @@ if(count($friends) > 0)
 		<div class="friend-block">
 			<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image((int) $friend['uni_id'], "large") . '" /></a>
 			<br />' . $friend['display_name'] . '
-			<br /><a href="/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
+			<br /><a ' . ($friend['role'] != '' ? 'class="role-' . $friend['role'] . '" ' : '') . 'href="/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
 			<br /><br /><a href="/friends/edit?handle=' . $friend['handle'] . '"><span class="icon-pencil"></span> Edit</a>
 		</div>';
 	}

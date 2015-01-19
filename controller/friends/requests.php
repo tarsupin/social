@@ -94,7 +94,7 @@ foreach($requests as $request)
 	<div class="friend-block">
 		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
-		<br /><a href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
+		<br /><a ' . ($request['role'] != '' ? 'class="role-' . $request['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 		<br /><br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("approve-friend-" . $request['handle']) . '">Approve</a>
 		<br /><a class="button" href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("deny-friend-" . $request['handle']) . '">Deny</a>
 	</div>';
@@ -122,7 +122,7 @@ foreach($requestsSent as $request)
 	<div class="friend-block">
 		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
-		<br /><a href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
+		<br /><a ' . ($request['role'] != '' ? 'class="role-' . $request['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
 	</div>';
 }
 

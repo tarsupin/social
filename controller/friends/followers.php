@@ -62,7 +62,7 @@ foreach($followList as $userData)
 	$userData['uni_id'] = (int) $userData['uni_id'];
 	
 	echo '
-	<div class="friend-block"><a href="/' . $userData['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($userData['uni_id'], "large") . '" /></a><br />' . $userData['display_name'] . '<br /><a href="/' . $userData['handle'] . '">@' . $userData['handle'] . '</a></div>';
+	<div class="friend-block"><a href="/' . $userData['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($userData['uni_id'], "large") . '" /></a><br />' . $userData['display_name'] . '<br /><a ' . ($userData['role'] != '' ? 'class="role-' . $userData['role'] . '" ' : '') . 'href="/' . $userData['handle'] . '">@' . $userData['handle'] . '</a></div>';
 }
 
 echo '

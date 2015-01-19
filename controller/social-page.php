@@ -1,5 +1,10 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
+if(You::$id == 0)
+{
+	header("Location: /" . (Me::$loggedIn ? Me::$vals['handle'] : ""));
+	exit;
+}
 // Get the social data
 $social = new AppSocial(You::$id);
 
@@ -36,7 +41,7 @@ else if(Form::submitted("social-reply-box"))
 	{
 		// Prepare Values
 		$commentID = (int) $_POST['social_reply_input'];
-		$comment = Sanitize::text($_POST['social_reply_text'], "/'?");
+		$comment = Sanitize::text($_POST['social_reply_text'], "/~");
 		
 		// Make sure the comment is within an acceptable limit
 		$comment = substr($comment, 0, 255);
@@ -140,22 +145,28 @@ echo '
 		<div id="social-name">@' . You::$handle . '</div>';
 	
 	// Friend, Follow, and My Page
-	if($social->clearance == 0 or $social->clearance == 2)
+	if(Me::$loggedIn)
 	{
-		echo '
-		<div id="follow-high" class="follow-button"><a href="/friends/send-request?handle=' . You::$handle . '">+ Friend</a></div>
-		<div id="follow-low" class="follow-button"><a href="/' . You::$handle . '?action=follow&' . AppSocial::$linkProtect . '">+ Follow</a></div>';
-	}
-	else if($social->clearance < 4)
-	{
-		echo '
-		<div id="follow-high" class="follow-button"><a href="/friends/send-request?handle=' . You::$handle . '">+ Friend</a></div>
-		<div id="follow-low" class="follow-button clicked"><a href="/' . You::$handle . '?action=unfollow&' . AppSocial::$linkProtect . '">Following</a></div>';
-	}
-	else if($social->clearance < 8)
-	{
-		echo '
-		<div id="follow-low" class="follow-button clicked"><a href="/friends/edit?handle=' . You::$handle . '">Friend</a></div>';
+		if(Me::$clearance >= 6 && Me::$id != You::$id)	{ $clearance = AppFriends::getClearance(Me::$id, You::$id); }
+		else					{ $clearance = $social->clearance; }
+			
+		if($clearance == 0 or $clearance == 2)
+		{
+			echo '
+			<div id="follow-high" class="follow-button"><a href="/friends/send-request?handle=' . You::$handle . '">+ Friend</a></div>
+			<div id="follow-low" class="follow-button"><a href="/' . You::$handle . '?action=follow&' . AppSocial::$linkProtect . '">+ Follow</a></div>';
+		}
+		else if($clearance < 4)
+		{
+			echo '
+			<div id="follow-high" class="follow-button"><a href="/friends/send-request?handle=' . You::$handle . '">+ Friend</a></div>
+			<div id="follow-low" class="follow-button clicked"><a href="/' . You::$handle . '?action=unfollow&' . AppSocial::$linkProtect . '">Following</a></div>';
+		}
+		else if($clearance < 8)
+		{
+			echo '
+			<div id="follow-low" class="follow-button clicked"><a href="/friends/edit?handle=' . You::$handle . '">Friend</a></div>';
+		}
 	}
 	
 	echo '
@@ -169,22 +180,26 @@ echo '
 			<div class="stat-module"><div class="sm-top">' . $social->data['followers'] . '</div><div class="sm-bot">Followers</div></div>
 		</div>
 	</div>
-</div>
+</div>';
 
+if($social->canPost)
+{
+	echo '
 <div class="overwrap-box">
 <form class="uniform" action="/' . You::$handle . '" method="post">' . Form::prepare("social-uni6-post") . '
-	<div id="post-top">' . UniMarkup::buttonLine() . '<div id="post-textwrap"><textarea id="core_text_box" name="post_message" maxlength="255" placeholder="Enter your message ' . (Me::$id != You::$id ? 'to ' . You::$name . ' ' : '') . 'here...">' . (isset($_POST['post_message']) ? htmlspecialchars($_POST['post_message']) : '') . '</textarea></div></div>
+	<div id="post-top">' . UniMarkup::buttonLine() . '<div id="post-textwrap"><textarea id="core_text_box" name="post_message" maxlength="255" placeholder="Enter your ' . (Me::$id != You::$id ? 'message to ' . You::$name . ' ' : 'status ') . 'here...">' . (isset($_POST['post_message']) ? htmlspecialchars($_POST['post_message']) : '') . '</textarea></div></div>
 	<div id="post-bottom">
 		<div id="post-bottom-left">
 			<a href="/post?gen=image"><span class="icon-image"></span></a>
 			<a href="/post?gen=video"><span class="icon-video"></span></a>
 		</div>
-		<div id="post-bottom-right"><input type="button" value="Preview" onclick="previewPost();"/> <input type="submit" name="submit_friends" value="Post to Friends" class="button" /> <input type="submit" name="submit_public" value="Public Post" class="button" /></div>
+		<div id="post-bottom-right"><input type="button" value="Preview" onclick="previewPost();"/> ' . ($social->clearance<4 ? '' : '<input type="submit" name="submit_friends" value="Post to Friends" class="button" /> ') . '<input type="submit" name="submit_public" value="Public Post" class="button" /></div>
 	</div>
 	<div id="preview" class="thread-post" style="display:none; padding:4px; margin-top:10px;"></div>
 </form>
 </div>
 ';
+}
 
 // <a href="/post"><span class="icon-attachment"></span></a>
 
@@ -277,7 +292,12 @@ function commentReturn(response)
 		{
 			prepHTML += '<span style="font-weight:bold">' + c.display_name + '</span>';
 		}
-		prepHTML +=' <a href="/' + c.handle + '">@' + c.handle + '</a><div class="comment-time-post">' + c.date_posted + '</div><br />' + c.comment + '</div></form></div><div style="clear:both;"></div>';
+		prepHTML +=' <a ';
+		if(c.role != "")
+		{
+			prepHTML += 'class="role-' + c.role + '" ';
+		}
+		prepHTML += 'href="/' + c.handle + '">@' + c.handle + '</a><div class="comment-time-post">' + c.date_posted + '</div><br />' + c.comment + '</div></form></div><div style="clear:both;"></div>';
 	}
 	
 	// Get the universal social reply form

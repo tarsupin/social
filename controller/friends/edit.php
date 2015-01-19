@@ -7,7 +7,7 @@ if(!Me::$loggedIn)
 }
 
 // Get the friend that you're interacting with
-if(!isset($_GET['handle']) or !$friend = User::getDataByHandle($_GET['handle'], "uni_id, display_name, handle"))
+if(!isset($_GET['handle']) or !$friend = User::getDataByHandle($_GET['handle'], "uni_id, display_name, handle, role"))
 {
 	Alert::saveError("Invalid Friend", "That friend is not valid.", 4);
 	
@@ -85,7 +85,7 @@ echo '
 	<p>
 		<a href="/' . $friend['handle'] . '"><img class="circimg-large" src="' . ProfilePic::image($friend['uni_id'], "large") . '" /></a>
 		<br />' . $friend['display_name'] . '
-		<br /><a href="/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
+		<br /><a ' . ($friend['role'] != '' ? 'class="role-' . $friend['role'] . '" ' : '') . 'href="/' . $friend['handle'] . '">@' . $friend['handle'] . '</a>
 		
 		<div>
 			Permissions:<br /><select name="clearance">' . str_replace('value="' . $clearance . '"', 'value="' . $clearance . '" selected', '

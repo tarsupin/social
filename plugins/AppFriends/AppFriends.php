@@ -65,6 +65,11 @@ abstract class AppFriends {
 	
 	// $clearance = AppFriends::getClearance($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return 0;
+		}
+		
 		return (int) Database::selectValue("SELECT clearance FROM friends_list WHERE uni_id=? AND friend_id=? LIMIT 1", array($uniID, $friendID));
 	}
 	
@@ -89,6 +94,11 @@ abstract class AppFriends {
 			if($pass = Database::query("DELETE FROM friends_list WHERE uni_id=? AND friend_id=?", array($uniID, $friendID)))
 			{
 				$pass = Database::query("INSERT INTO friends_list (uni_id, friend_id, clearance) VALUES (?, ?, ?)", array($uniID, $friendID, $clearance));
+				if($pass)
+				{
+					Cache::delete("friends:" . $uniID);
+					Cache::delete("friends:" . $friendID);
+				}
 			}
 			
 			return Database::endTransaction($pass);
@@ -107,6 +117,11 @@ abstract class AppFriends {
 	
 	// AppFriends::follow($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return false;
+		}
+		
 		// Get your clearance level with the target friend
 		$myClearance = AppFriends::getClearance($uniID, $friendID);
 		
@@ -174,6 +189,11 @@ abstract class AppFriends {
 	
 	// AppFriends::unfollow($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return false;
+		}
+		
 		// Get your clearance level with the target friend
 		$myClearance = AppFriends::getClearance($uniID, $friendID);
 		
@@ -215,6 +235,11 @@ abstract class AppFriends {
 	
 	// AppFriends::unfriend($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return false;
+		}
+		
 		// Get your clearance level with the target friend
 		$myClearance = AppFriends::getClearance($uniID, $friendID);
 		
@@ -251,6 +276,12 @@ abstract class AppFriends {
 			
 			// Run the API
 			$pass = Connect::to("sync_friends", "RemoveFriendAPI", $packet);
+			
+			if($pass)
+			{
+				Cache::delete("friends:" . $uniID);
+				Cache::delete("friends:" . $friendID);
+			}
 		}
 		
 		return Database::endTransaction($pass);
@@ -312,17 +343,11 @@ abstract class AppFriends {
 	,	$page = 1				// <int> The row number to start at.
 	,	$numRows = 20			// <int> The number of rows to return.
 	,	$byEngagement = false	// <bool> Sort the list by engagement value.
-	,	$forNotification = false// <bool> Exclude people who don't wish to be notified if true.
 	)							// RETURNS <int:[str:mixed]> the list of followers, array() on failure.
 	
 	// $followers = AppFriends::getFollowerList($uniID, [$page], [$numRows], [$byEngagement], [$forNotification]);
-	{
-		if($forNotification)
-		{
-			return Database::selectMultiple("SELECT f.friend_id FROM friends_list as f INNER JOIN social_data as s ON s.uni_id=f.friend_id WHERE f.uni_id=? AND f.clearance IN (?, ?) AND s.feed_notify=? LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3, 1));
-		}
-		
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?)" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3));
+	{		
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name, u.role FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?)" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 2, 3));
 	}
 	
 	
@@ -337,7 +362,7 @@ abstract class AppFriends {
 	
 	// $followers = AppFriends::getFollowingList($uniID, [$page], [$numRows], [$byEngagement]);
 	{
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?) " . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 1, 3));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name, u.role FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance IN (?, ?) " . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 1, 3));
 	}
 	
 	
@@ -348,16 +373,23 @@ abstract class AppFriends {
 	,	$page = 1				// <int> The row number to start at.
 	,	$numRows = 20			// <int> The number of rows to return.
 	,	$byEngagement = false	// <bool> Sort the list by engagement value.
-	,	$forNotification = false// <bool> Exclude people who don't wish to be notified if true.
 	)							// RETURNS <int:[str:mixed]> the list of friends, array() on failure.
 	
 	// $friends = AppFriends::getFriendList($uniID, [$page], [$numRows], [$byEngagement], [$forNotification]);
 	{
-		if($forNotification)
-		{
-			return Database::selectMultiple("SELECT f.friend_id FROM friends_list as f INNER JOIN social_data as s ON s.uni_id=f.friend_id WHERE f.uni_id=? AND f.clearance >= ? AND s.feed_notify=? LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4, 1));
-		}
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance >= ?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name, u.role FROM friends_list as f INNER JOIN users as u ON f.friend_id = u.uni_id WHERE f.uni_id=? AND f.clearance >= ?" . ($byEngagement === true ? " ORDER BY f.engage_value DESC" : " ORDER BY u.handle") . " LIMIT " . (($page - 1) * $numRows) . ", " . ($numRows + 0), array($uniID, 4));
+	}
+	
+	
+/****** Get the list of a user's friends ******/
+	public static function getNotificationList
+	(
+		$uniID					// <int> The UniID of the user to find friends of.
+	)							// RETURNS <int:[str:mixed]> the list of friends, array() on failure.
+	
+	// $notifyList = AppFriends::getNotificationList($uniID);
+	{
+		return Database::selectMultiple("SELECT f.friend_id, f.clearance FROM friends_list as f INNER JOIN social_data as s ON s.uni_id=f.friend_id WHERE f.uni_id=? AND f.clearance>? AND s.feed_notify=?", array($uniID, 1, 1));
 	}
 	
 	
@@ -384,7 +416,7 @@ abstract class AppFriends {
 	
 	// $requests = AppFriends::getRequestList($uniID, [$startPos], [$limit]);
 	{
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_requests f INNER JOIN users u ON f.friend_id = u.uni_id WHERE f.uni_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name, u.role FROM friends_requests f INNER JOIN users u ON f.friend_id = u.uni_id WHERE f.uni_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
 	}
 	
 	
@@ -398,7 +430,7 @@ abstract class AppFriends {
 	
 	// $requestsSent = AppFriends::getRequestSentList($uniID, [$startPos], [$limit]);
 	{
-		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name FROM friends_requests f INNER JOIN users u ON f.uni_id = u.uni_id WHERE f.friend_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
+		return Database::selectMultiple("SELECT u.uni_id, u.handle, u.display_name, u.role FROM friends_requests f INNER JOIN users u ON f.uni_id = u.uni_id WHERE f.friend_id=? LIMIT " . ($startPos + 0) . ", " . ($limit + 0), array($uniID));
 	}
 	
 	
@@ -411,6 +443,11 @@ abstract class AppFriends {
 	
 	// AppFriends::sendRequest($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return false;
+		}
+		
 		// To send a request, you must be following the user
 		AppFriends::follow($uniID, $friendID);
 		
@@ -452,6 +489,11 @@ abstract class AppFriends {
 	
 	// AppFriends::approve($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return false;
+		}
+		
 		// Make sure a request was actually provided
 		if(!$request = self::getRequest($friendID, $uniID))
 		{
@@ -515,6 +557,11 @@ abstract class AppFriends {
 	
 	// AppFriends::deny($uniID, $friendID);
 	{
+		if($uniID == 0 || $friendID == 0)
+		{
+			return false;
+		}
+		
 		Database::startTransaction();
 		
 		// Remove the friend request

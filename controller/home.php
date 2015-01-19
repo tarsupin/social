@@ -32,7 +32,7 @@ if(Me::$loggedIn)
 		if($fSocial->canComment)
 		{
 			// Prepare Values
-			$comment = Sanitize::text($_POST['social_reply_text'], "/'?\"");
+			$comment = Sanitize::text($_POST['social_reply_text'], "/~");
 			
 			// Make sure the comment is within an acceptable limit
 			$comment = substr($comment, 0, 255);
@@ -157,7 +157,12 @@ function commentReturn(response)
 		{
 			prepHTML += '<span style="font-weight:bold">' + c.display_name + '</span>';
 		}
-		prepHTML +=' <a href="/' + c.handle + '">@' + c.handle + '</a><div class="comment-time-post">' + c.date_posted + '</div><br />' + c.comment + '</div></form></div><div style="clear:both;"></div>';
+		prepHTML +=' <a ';
+		if(c.role != "")
+		{
+			prepHTML += 'class="role-' + c.role + '" ';
+		}
+		prepHTML += 'href="/' + c.handle + '">@' + c.handle + '</a><div class="comment-time-post">' + c.date_posted + '</div><br />' + c.comment + '</div></form></div><div style="clear:both;"></div>';
 	}
 	
 	// Get the universal social reply form

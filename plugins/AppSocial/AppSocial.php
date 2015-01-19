@@ -81,8 +81,8 @@ class AppSocial {
 		// Set the access levels
 		$this->clearance = $clearance;
 		$this->canAccess = $this->data['perm_access'] <= $clearance ? true : false;
-		$this->canPost = $this->data['perm_post'] <= $clearance ? true : false;
-		$this->canComment = $this->data['perm_comment'] <= $clearance ? true : false;
+		$this->canPost = $this->data['perm_post'] <= $clearance && $this->uniID > 0 ? true : false;
+		$this->canComment = $this->data['perm_comment'] <= $clearance && $this->uniID > 0 ? true : false;
 	}
 	
 	
@@ -146,7 +146,7 @@ class AppSocial {
 	
 	// $postList = AppSocial::getUserPosts($uniID, $clearance, [$page], [$showNum]);
 	{
-		return Database::selectMultiple("SELECT sp.*, u.handle, u.display_name FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id AND sp.clearance <= ? AND sp.date_posted <= ? INNER JOIN users u ON sp.poster_id=u.uni_id WHERE spu.uni_id=? ORDER BY spu.id DESC LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 0), array($clearance, time(), $uniID));
+		return Database::selectMultiple("SELECT sp.*, u.handle, u.display_name, u.role FROM users_posts spu INNER JOIN social_posts sp ON spu.id=sp.id AND sp.clearance <= ? AND sp.date_posted <= ? INNER JOIN users u ON sp.poster_id=u.uni_id WHERE spu.uni_id=? ORDER BY spu.id DESC LIMIT " . (($page - 1) * $showNum) . ", " . ($showNum + 0), array($clearance, time(), $uniID));
 	}
 	
 	
@@ -171,7 +171,7 @@ class AppSocial {
 	
 	// $postData = AppSocial::getPostDirect($postID);
 	{
-		return Database::selectOne("SELECT sp.*, u.handle, u.display_name FROM social_posts sp INNER JOIN users u ON sp.poster_id=u.uni_id WHERE id=? LIMIT 1", array($postID));
+		return Database::selectOne("SELECT sp.*, u.handle, u.display_name, u.role FROM social_posts sp INNER JOIN users u ON sp.poster_id=u.uni_id WHERE id=? LIMIT 1", array($postID));
 	}
 	
 	
@@ -202,6 +202,8 @@ class AppSocial {
 		{
 			$postID = Database::$lastID;
 			
+			$link .= '#p' . $postID;
+			
 			if($pass = Database::query("INSERT INTO `users_posts` (uni_id, id) VALUES (?, ?)", array($socialID, $postID)))
 			{
 				$pass = Database::query("UPDATE social_data SET posts=posts+1 WHERE uni_id=?", array($posterID));
@@ -216,7 +218,8 @@ class AppSocial {
 				Comment::process($posterID, $message, $link, $socialID, $hashData);
 			}
 			
-			$userData = User::get($posterID, "handle");
+			if($posterID != Me::$id)	{ $userData['handle'] = Me::$vals['handle']; }
+			else 						{ $userData = User::get($posterID, "handle");}
 			
 			// Post a notification to someone's wall you're posting on
 			if($socialID != $posterID)
@@ -226,23 +229,18 @@ class AppSocial {
 			// Post notifications to friends
 			else
 			{
-				$social = new AppSocial($posterID);
-				$friendCount = (int) $social->data['friends'];
-				$followerCount = (int) $social->data['followers'];
+				$socialData = Database::selectOne("SELECT * FROM social_data WHERE uni_id=? LIMIT 1", array($posterID));
 				
 				// Search through the list of friends and followers
-				$friendList = AppFriends::getFriendList($posterID, 1, $friendCount, false, true);
-				if($clearance < 4)	{ $followerList = AppFriends::getFollowerList($posterID, 1, $followerCount, false, true); }
-				else				{ $followerList = array(); }
+				$notifyList = AppFriends::getNotificationList($posterID);
 				
 				$uniIDList = array();
-				foreach($friendList as $friend)
+				foreach($notifyList as $key => $notify['clearance'])
 				{
-					$uniIDList[] = (int) $friend['friend_id'];
-				}
-				foreach($followerList as $follower)
-				{
-					$uniIDList[] = (int) $follower['friend_id'];
+					if($clearance <= $notify['clearance'])
+					{
+						$uniIDList[] = (int) $notify['friend_id'];
+					}
 				}
 				
 				Notifications::createMultiple($uniIDList, $link, "@" . $userData['handle'] . " has posted a status.");
@@ -265,7 +263,7 @@ class AppSocial {
 	// $social->deletePost($uniID, $postID);
 	{
 		// Make sure you have clearance to delete this post
-		if($this->clearance < 6)
+		if($this->clearance < 6 && Me::$clearance < 6)
 		{
 			return false;
 		}
@@ -360,11 +358,12 @@ class AppSocial {
 			$post['attachment_id'] = (int) $post['attachment_id'];
 			
 			echo '
+			<span class="post-anchor" id="p' . $post['id'] . '" style="display:block; position:relative; top:-60px; height:0px;"></span>
 			<div class="comment">
 				<div class="comment-left"><a href="/' . $post['handle'] . '"><img class="circimg" src="' . ProfilePic::image($post['poster_id'], "medium") . '"></a></div>
 				<div class="comment-right">
 					<div class="comment-top">
-						<div class="comment-data"><span class="hide-600">' . (lcfirst($post['display_name']) != lcfirst($post['handle']) ? $post['display_name'] . ' ' : '') . '</span> <a href="/' . $post['handle'] . '">@' . $post['handle'] . '</a></div>
+						<div class="comment-data"><span class="hide-600">' . (lcfirst($post['display_name']) != lcfirst($post['handle']) ? $post['display_name'] . ' ' : '') . '</span> <a ' . ($post['role'] != '' ? 'class="role-' . $post['role'] . '" ' : '') . 'href="/' . $post['handle'] . '">@' . $post['handle'] . '</a></div>
 						<div class="comment-time-post">' . Time::fuzzy($post['date_posted']) . '</div>
 					</div>
 					<div class="comment-message">';

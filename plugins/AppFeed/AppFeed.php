@@ -126,10 +126,10 @@ abstract class AppFeed {
 		// If you're sorting by most recent posts
 		if($sortType == 1)
 		{
-			return Database::selectMultiple("SELECT p.*, u.handle, u.display_name FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY post_id DESC", array($uniID));
+			return Database::selectMultiple("SELECT p.*, u.handle, u.display_name, u.role FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY post_id DESC", array($uniID));
 		}
 		
-		return Database::selectMultiple("SELECT p.*, u.handle, u.display_name FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY engage_value DESC", array($uniID));
+		return Database::selectMultiple("SELECT p.*, u.handle, u.display_name, u.role FROM social_feed f INNER JOIN social_posts p ON p.id = f.post_id INNER JOIN users as u ON p.poster_id = u.uni_id WHERE f.uni_id=? ORDER BY engage_value DESC", array($uniID));
 	}
 	
 	
