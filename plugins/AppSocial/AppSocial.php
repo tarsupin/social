@@ -447,7 +447,7 @@ class AppSocial {
 			
 			if($clearance >= 6)
 			{
-				echo '<a href="/' . You::$handle . '?delete=' . $post['id'] . '&' . self::$linkProtect . '"><span class="icon-circle-close"></span> Delete</a>';
+				echo '<a href="/' . You::$handle . '?delete=' . $post['id'] . '&' . self::$linkProtect . '" onclick="return confirm(\'Are you sure you want to delete this?\');"><span class="icon-circle-close"></span> Delete</a>';
 			}
 			
 			echo '</div></div>';
