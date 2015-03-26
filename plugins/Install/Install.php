@@ -10,6 +10,7 @@ abstract class Install extends Installation {
 	public static $addonPlugins = array(	// <str:bool>
 		"Analytics"			=> true
 	,	"Attachment"		=> true
+	,	"Avatar"			=> true
 	,	"UserActivity"		=> true
 	,	"FeaturedWidget"	=> true
 	,	"Friends"			=> true

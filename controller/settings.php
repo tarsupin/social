@@ -66,6 +66,62 @@ if(Form::submitted("upl-social-header"))
 	Alert::success("Settings Updated", "Your page settings have been updated.");
 }
 
+// If you chose an avatar
+if(isset($_GET['def']))
+{
+	// Check if that avatar is valid
+	$packet = array(
+		"uni_id"	=> Me::$id
+	,	"avi_id"	=> (int) $_GET['def']		// The ID of the avatar to test for
+	);
+	
+	if((int) $_GET['def'] == 0)
+	{
+		$avatarExists = true;
+	}
+	else
+	{
+		$avatarExists = Connect::to("avatar", "AvatarExists", $packet);
+	}
+	
+	if($avatarExists)
+	{
+		// If the avatar is valid, update your default avatar
+		Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array((int) $_GET['def'], Me::$id));
+		
+		Me::$vals['avatar_opt'] = (int) $_GET['def'];
+		
+		Alert::success("Avatar Updated", "You have chosen your default avatar.");
+	}
+	else
+	{
+		Alert::error("Avatar Error", "There was an error trying to load this avatar.");
+	}
+}
+
+// Prepare Values
+$avatarList = json_decode($social->data['avatar_list'], true);
+
+// If you're loading your avatars
+if($value = Link::clicked() and $value == "load-avatars")
+{
+	// Prepare a list of plugins and their current versions
+	$packet = array(
+		"uni_id"			=> Me::$id			// The UniID to check avatars for
+	);
+	
+	if($avatarList = Connect::to("avatar", "MyAvatarsAPI", $packet))
+	{
+		// Update your avatar list
+		Database::query("UPDATE social_data SET avatar_list=? WHERE uni_id=? LIMIT 1", array(json_encode($avatarList), Me::$id));
+		
+		if(!Me::$vals['avatar_opt'])
+		{
+			Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array(1, Me::$id));
+		}
+	}
+}
+
 // Set the active user to yourself
 You::$id = Me::$id;
 You::$handle = Me::$vals['handle'];
@@ -96,12 +152,37 @@ Alert::display() . '
 echo '
 <form class="uniform" action="/settings" method="post" enctype="multipart/form-data">' . Form::prepare("upl-social-header") . '
 	
-	Upload Image: <input type="file" name="image"> (max 4200x3500, 3MB)
+	<input type="file" name="image"> (max 4200x3500, 3MB)
 	<input type="submit" name="submit" value="Upload">
 
 </form>
 	</div>
-</div>
+</div>';
+
+// Display your list of avatars available
+echo '
+<div class="overwrap-box">
+	<div class="overwrap-line" style="margin-bottom:10px;">
+		<div class="overwrap-name">My Avatars</div>
+	</div>
+	<div class="inner-box">
+		<div style="display:inline-block; padding:6px; text-align:center;"><img src="' . ProfilePic::image(Me::$id, "large") . '" /><br /><a class="button" href="/settings?def=0">Set as Default</a></div>';
+if($avatarList)
+{
+	foreach($avatarList as $aviID => $aviName)
+	{
+		echo '
+		<div style="display:inline-block; padding:6px; text-align:center;"><img src="' . Avatar::image(Me::$id, (int) $aviID) . '" /><br /><a class="button" href="/settings?def=' . $aviID . '">Set as Default</a></div>';
+	}
+}
+
+echo '
+	<div style="padding:8px;"><a class="button" href="/settings?loadAvis=1&' . Link::prepare("load-avatars") . '">Load My Avatars</a> <a class="button" href="' . URL::avatar_unifaction_com() . Me::$slg . '">Create an Avatar</a></div>
+	</div>
+</div>';
+
+// Other Settings
+echo '
 <div class="overwrap-box">
 	<div class="overwrap-line">Your Privacy Settings</div>
 	<div class="inner-box">

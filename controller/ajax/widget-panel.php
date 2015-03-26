@@ -4,6 +4,7 @@ $activeHashtag = isset($_POST['activeHashtag']) ? Sanitize::variable($_POST['act
 
 if($activeHashtag != '' && $userID = User::getIDByHandle($activeHashtag))
 {
+	echo AvatarWidget::display($userID, $activeHashtag);	
 	echo FriendWidget::display($userID, $activeHashtag);
 }
 

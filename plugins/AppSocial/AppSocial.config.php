@@ -44,6 +44,8 @@ class AppSocial_config {
 			
 			`last_feed_update`		int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
+			`avatar_list`			varchar(255)				NOT NULL	DEFAULT '',
+			
 			UNIQUE (`uni_id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 7;
 		");

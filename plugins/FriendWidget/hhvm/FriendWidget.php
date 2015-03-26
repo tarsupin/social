@@ -50,6 +50,7 @@ abstract class FriendWidget {
 		<!-- My Friends -->	
 		<style>
 			.chat-inner img { height:32px; }
+			.chat-inner { text-align:center; }
 		</style>
 		<div class="chat-wrap">
 			<div class="chat-header">
