@@ -167,7 +167,15 @@ if(Form::submitted("social-post-adv"))
 }
 
 // Sanitize Values
-$_POST['message'] = isset($_POST['message']) ? Sanitize::text($_POST['message'], "/~") : "";
+$_POST['message'] = isset($_POST['message']) ? Security::purify($_POST['message']) : '';
+if(strlen($_POST['message']) < 1)
+{
+	Alert::error("Post Length", "Please enter a message.");
+}
+elseif(strlen($_POST['message']) > 255)
+{
+	Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+}
 $_POST['video'] = isset($_POST['video']) ? Sanitize::url($_POST['video']) : "";
 $_POST['post_date'] = (isset($_POST['post_date'])) ? $_POST['post_date'] : $getNow;
 
@@ -190,7 +198,7 @@ Alert::display() . '
 echo '
 <form class="uniform" action="/post" method="post" enctype="multipart/form-data">' . Form::prepare("social-post-adv") . '
 	' . UniMarkup::buttonLine() . '
-	<textarea id="core_text_box" name="message" placeholder="Enter your message here..." maxlength="255" style="resize:vertical; width:100%;" tabindex="10" autofocus>' . htmlspecialchars($_POST['message']) . '</textarea>';
+	<textarea id="core_text_box" name="message" placeholder="Enter your message here..." maxlength="255" style="resize:vertical; width:100%;" tabindex="10" autofocus>' . $_POST['message'] . '</textarea>';
 
 if(!isset($_GET['gen']) or $_GET['gen'] == "image")
 {

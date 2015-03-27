@@ -15,7 +15,15 @@ if(Form::submitted("social-uni6-post"))
 	if(isset($_POST['post_message']))
 	{
 		// Make sure the post is within an acceptable limit
-		FormValidate::text("Post", $_POST['post_message'], 1, 255, chr(13));
+		$_POST['post_message'] = isset($_POST['post_message']) ? Security::purify($_POST['post_message']) : '';
+		if(strlen($_POST['post_message']) < 1)
+		{
+			Alert::error("Post Length", "Please enter a message.");
+		}
+		elseif(strlen($_POST['post_message']) > 255)
+		{
+			Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+		}
 		
 		// Make sure you have posting privileges
 		if(!$social->canPost)
@@ -41,10 +49,16 @@ else if(Form::submitted("social-reply-box"))
 	{
 		// Prepare Values
 		$commentID = (int) $_POST['social_reply_input'];
-		$comment = Sanitize::text($_POST['social_reply_text'], "/~");
-		
 		// Make sure the comment is within an acceptable limit
-		$comment = substr($comment, 0, 255);
+		$comment = isset($_POST['social_reply_text']) ? Security::purify($_POST['social_reply_text']) : '';
+		if(strlen($comment) < 1)
+		{
+			Alert::error("Post Length", "Please enter a message.");
+		}
+		elseif(strlen($comment) > 255)
+		{
+			Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+		}
 		
 		if(FormValidate::pass())
 		{
@@ -187,7 +201,7 @@ if($social->canPost)
 	echo '
 <div class="overwrap-box">
 <form class="uniform" action="/' . You::$handle . '" method="post">' . Form::prepare("social-uni6-post") . '
-	<div id="post-top">' . UniMarkup::buttonLine() . '<div id="post-textwrap"><textarea id="core_text_box" name="post_message" maxlength="255" placeholder="Enter your ' . (Me::$id != You::$id ? 'message to ' . You::$name . ' ' : 'status ') . 'here...">' . (isset($_POST['post_message']) ? htmlspecialchars($_POST['post_message']) : '') . '</textarea></div></div>
+	<div id="post-top">' . UniMarkup::buttonLine() . '<div id="post-textwrap"><textarea id="core_text_box" name="post_message" maxlength="255" placeholder="Enter your ' . (Me::$id != You::$id ? 'message to ' . You::$name . ' ' : 'status ') . 'here...">' . (isset($_POST['post_message']) ? $_POST['post_message'] : '') . '</textarea></div></div>
 	<div id="post-bottom">
 		<div id="post-bottom-left">
 			<a href="/post?gen=image"><span class="icon-image"></span></a>
