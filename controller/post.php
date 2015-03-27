@@ -35,6 +35,14 @@ if(Form::submitted("social-post-adv"))
 	$hashData = array();
 	$subImage = (isset($_FILES['image']) and $_FILES['image']['tmp_name'] != "") ? true : false;
 	$subVideo = (isset($_POST['video']) and $_POST['video'] != "") ? true : false;
+	if(strlen($_POST['message']) < 1)
+	{
+		Alert::error("Post Length", "Please enter a message.");
+	}
+	elseif(strlen($_POST['message']) > 255)
+	{
+		Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+	}
 	
 	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, 255);
 	FormValidate::variable("valid date", $_POST['post_date'], 0, 19, ":- ");
@@ -168,14 +176,6 @@ if(Form::submitted("social-post-adv"))
 
 // Sanitize Values
 $_POST['message'] = isset($_POST['message']) ? Security::purify($_POST['message']) : '';
-if(strlen($_POST['message']) < 1)
-{
-	Alert::error("Post Length", "Please enter a message.");
-}
-elseif(strlen($_POST['message']) > 255)
-{
-	Alert::error("Post Length", "Your post length may not exceed 255 characters.");
-}
 $_POST['video'] = isset($_POST['video']) ? Sanitize::url($_POST['video']) : "";
 $_POST['post_date'] = (isset($_POST['post_date'])) ? $_POST['post_date'] : $getNow;
 
