@@ -268,10 +268,13 @@ class AppSocial {
 			return false;
 		}
 		
-		// Make sure the post actually belongs to the user
-		if(!$check = Database::selectValue("SELECT uni_id FROM users_posts WHERE uni_id=? AND id=?", array($uniID, $postID)))
+		// Make sure the post actually belongs to the user unless a mod is deleting
+		if(Me::$clearance < 6)
 		{
-			return false;
+			if(!$check = Database::selectValue("SELECT uni_id FROM users_posts WHERE uni_id=? AND id=?", array($uniID, $postID)))
+			{
+				return false;
+			}
 		}
 		
 		// Delete the post

@@ -6,6 +6,8 @@ if(!isset($_GET['startPos']) or !isset($_GET['uniID']) or !Me::$loggedIn)
 	exit;
 }
 
+You::load((int) $_GET['uniID']);
+
 $social = new AppSocial((int) $_GET['uniID']);
 
 // Get the post list
