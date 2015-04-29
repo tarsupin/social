@@ -27,12 +27,23 @@ if($url[0] != '')
 	}
 	
 	if($userData)
-	{
+	{	
 		// Prepare "You"
 		You::$id = (int) $userData['uni_id'];
 		You::$name = $userData['display_name'];
 		You::$handle = $userData['handle'];
 		
+		if(isset($url[1]) && $url[1] == "pages")
+		{
+			if(isset($url[2]))
+			{
+				if(File::exists(APP_PATH . "/controller/pages/" . $url[2] . ".php"))
+				{
+					require(APP_PATH . "/controller/pages/" . $url[2] . ".php"); exit;
+				}
+			}
+			require(APP_PATH . '/controller/pages.php'); exit;
+		}
 		require(APP_PATH . '/controller/social-page.php'); exit;
 	}
 }

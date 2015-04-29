@@ -192,7 +192,7 @@ class AppSocial {
 	// $postID = AppSocial::createPost($socialID, $posterID, $clearance, $attachmentID, $message, [$link], [$whenToPost], [$hashData], [$origHandle]);
 	{
 		// Prepare Values
-		$message = (string) substr($message, 0, 255);
+		$message = (string) substr($message, 0, 600);
 		$whenToPost = ($whenToPost == 0 ? time() : $whenToPost + 0);
 		
 		// Create the Post

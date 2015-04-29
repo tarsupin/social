@@ -39,16 +39,16 @@ if(Form::submitted("social-post-adv"))
 	{
 		Alert::error("Post Length", "Please enter a message.");
 	}
-	elseif(strlen($_POST['message']) > 255)
+	elseif(strlen($_POST['message']) > 600)
 	{
-		Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+		Alert::error("Post Length", "Your post length may not exceed 600 characters.");
 	}
 	
-	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, 255);
+	FormValidate::text(($subImage or $subVideo) ? "Caption" : "Message", $_POST['message'], ($subImage or $subVideo) ? 0 : 1, 600);
 	FormValidate::variable("valid date", $_POST['post_date'], 0, 19, ":- ");
 	
-	if($subVideo) { FormValidate::url("Video URL", $_POST['video'], 1, 255); }
-	if($subImage) { FormValidate::filepath("Image URL", $_FILES['image']['tmp_name'], 1, 255); }
+	if($subVideo) { FormValidate::url("Video URL", $_POST['video'], 1, 600); }
+	if($subImage) { FormValidate::filepath("Image URL", $_FILES['image']['tmp_name'], 1, 600); }
 	
 	if(FormValidate::pass())
 	{
@@ -198,7 +198,7 @@ Alert::display() . '
 echo '
 <form class="uniform" action="/post" method="post" enctype="multipart/form-data">' . Form::prepare("social-post-adv") . '
 	' . UniMarkup::buttonLine() . '
-	<textarea id="core_text_box" name="message" placeholder="Enter your message here..." maxlength="255" style="resize:vertical; width:100%;" tabindex="10" autofocus>' . $_POST['message'] . '</textarea>';
+	<textarea id="core_text_box" name="message" placeholder="Enter your message here..." rows="3" maxlength="600" style="resize:vertical; width:100%;" tabindex="10" autofocus>' . $_POST['message'] . '</textarea>';
 
 if(!isset($_GET['gen']) or $_GET['gen'] == "image")
 {

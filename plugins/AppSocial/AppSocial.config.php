@@ -41,6 +41,7 @@ class AppSocial_config {
 			`friends`				mediumint(6)	unsigned	NOT NULL	DEFAULT '0',
 			`followers`				mediumint(6)	unsigned	NOT NULL	DEFAULT '0',
 			`following`				mediumint(6)	unsigned	NOT NULL	DEFAULT '0',
+			`pages`					tinyint(3)		unsigned	NOT NULL	DEFAULT '0',
 			
 			`last_feed_update`		int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
@@ -57,7 +58,7 @@ class AppSocial_config {
 			
 			`orig_handle`			varchar(22)					NOT NULL	DEFAULT '',
 			`poster_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
-			`post`					varchar(255)				NOT NULL	DEFAULT '',
+			`post`					text						NOT NULL	DEFAULT '',
 			
 			`clearance`				tinyint(1)					NOT NULL	DEFAULT '0',
 			`attachment_id`			int(10)			unsigned	NOT NULL	DEFAULT '0',

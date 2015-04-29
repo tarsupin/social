@@ -529,6 +529,12 @@ abstract class AppFriends {
 			
 			// Run the API
 			$pass = (bool) Connect::to("sync_friends", "AddFriendAPI", $packet);
+			
+			if($pass)
+			{
+				Cache::delete("friends:" . $uniID);
+				Cache::delete("friends:" . $friendID);
+			}
 		}
 		
 		$success = Database::endTransaction($pass);

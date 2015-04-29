@@ -20,9 +20,9 @@ if(Form::submitted("social-uni6-post"))
 		{
 			Alert::error("Post Length", "Please enter a message.");
 		}
-		elseif(strlen($_POST['post_message']) > 255)
+		elseif(strlen($_POST['post_message']) > 600)
 		{
-			Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+			Alert::error("Post Length", "Your post length may not exceed 600 characters.");
 		}
 		
 		// Make sure you have posting privileges
@@ -55,9 +55,9 @@ else if(Form::submitted("social-reply-box"))
 		{
 			Alert::error("Post Length", "Please enter a message.");
 		}
-		elseif(strlen($comment) > 255)
+		elseif(strlen($comment) > 600)
 		{
-			Alert::error("Post Length", "Your post length may not exceed 255 characters.");
+			Alert::error("Post Length", "Your post length may not exceed 600 characters.");
 		}
 		
 		if(FormValidate::pass())
@@ -73,7 +73,7 @@ else if(Form::submitted("social-reply-box"))
 		}
 		else
 		{
-			Alert::info("Content", "You were trying to post the following:<br/><textarea style='width:100%;'>" . htmlspecialchars($_POST['post_message']) . "</textarea>");
+			Alert::info("Content", "You were trying to post the following:<br/><textarea rows='3' style='width:100%;'>" . htmlspecialchars($_POST['post_message']) . "</textarea>");
 		}
 	}
 }
@@ -192,6 +192,7 @@ echo '
 			<div class="stat-module"><div class="sm-top">' . $social->data['friends'] . '</div><div class="sm-bot">Friends</div></div>
 			<div class="stat-module hide-600"><div class="sm-top">' . $social->data['following'] . '</div><div class="sm-bot">Following</div></div>
 			<div class="stat-module"><div class="sm-top">' . $social->data['followers'] . '</div><div class="sm-bot">Followers</div></div>
+			<div class="stat-module"><div class="sm-top">' . $social->data['pages'] . '</div><div class="sm-bot">Pages</div></div>
 		</div>
 	</div>
 </div>';
@@ -201,7 +202,7 @@ if($social->canPost)
 	echo '
 <div class="overwrap-box">
 <form class="uniform" action="/' . You::$handle . '" method="post">' . Form::prepare("social-uni6-post") . '
-	<div id="post-top">' . UniMarkup::buttonLine() . '<div id="post-textwrap"><textarea id="core_text_box" name="post_message" maxlength="255" placeholder="Enter your ' . (Me::$id != You::$id ? 'message to ' . You::$name . ' ' : 'status ') . 'here...">' . (isset($_POST['post_message']) ? $_POST['post_message'] : '') . '</textarea></div></div>
+	<div id="post-top">' . UniMarkup::buttonLine() . '<div id="post-textwrap"><textarea id="core_text_box" name="post_message" rows="3" maxlength="600" placeholder="Enter your ' . (Me::$id != You::$id ? 'message to ' . You::$name . ' ' : 'status ') . 'here...">' . (isset($_POST['post_message']) ? $_POST['post_message'] : '') . '</textarea></div></div>
 	<div id="post-bottom">
 		<div id="post-bottom-left">
 			<a href="/post?gen=image"><span class="icon-image"></span></a>
@@ -273,7 +274,7 @@ function positionReplyBox(user, postID)
 	}
 	
 	// Pull the comments for a specific post
-	getAjax("", "getComments", "commentReturn", "postID=" + postID, "user=" + user, "page=1");
+	getAjax("", "get-comments", "commentReturn", "postID=" + postID, "user=" + user, "page=1");
 }
 
 function commentReturn(response)
@@ -291,7 +292,7 @@ function commentReturn(response)
 	
 	if(obj.hasmore == 1)
 	{
-		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'getComments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
+		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'get-comments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
 	}
 
 	for(var comment in commentData)
@@ -362,7 +363,7 @@ echo '
 	<input id="social_reply_input" type="hidden" name="social_reply_input" value="0" />
 	<div style="float:left; width:90px; text-align:right;"><img class="circimg-small" src="' . ProfilePic::image(Me::$id) . '" /></div>
 	<div style="margin-left:100px;">
-		<textarea name="social_reply_text" placeholder="Enter your comment here..." maxlength="255" style="width:98%; height:48px;"></textarea>
+		<textarea name="social_reply_text" placeholder="Enter your comment here..." rows="3" maxlength="600" style="width:98%;"></textarea>
 		<div><input type="submit" name="submit" value="Post Reply" /></div>
 	</div>
 </form>

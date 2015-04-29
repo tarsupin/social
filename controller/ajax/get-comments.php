@@ -35,7 +35,7 @@ if($social->canAccess)
 	if($postData['has_comments'] > 0)
 	{
 		// Get Comments
-		$comments = AppComment::getListAJAX((int) $postData['id'], $_POST['page'], 3, "DESC");
+		$comments = AppComment::getListAJAX((int) $postData['id'], $_POST['page'], 10, "DESC");
 		
 		foreach($comments as $key => $val)
 		{
@@ -45,7 +45,7 @@ if($social->canAccess)
 		}
 		
 		$comLen = count($comments);
-		if($comLen > 3)
+		if($comLen > 10)
 		{
 			$hasmore = 1;
 			array_pop($comments);

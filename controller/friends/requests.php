@@ -39,6 +39,20 @@ if(isset($_GET['handle']))
 					Alert::success("Friend Approved", "You have denied " . $friend['handle'] . "'s friend request.");
 				}
 			}
+			
+			// If the friend request is being cancelled by the sender
+			else if($link == "cancel-request-" . $friend['handle'])
+			{
+				// Remove the friend request
+				if(AppFriends::deny($friend['uni_id'], Me::$id))
+				{
+					// Sending the request involved following
+					if(AppFriends::unfollow(Me::$id, $friend['uni_id']))
+					{
+						Alert::success("Request Cancelled", "You have cancelled the friend request to " . $friend['handle'] . ".");
+					}
+				}
+			}
 		}
 	}
 	else
@@ -123,6 +137,7 @@ foreach($requestsSent as $request)
 		<a href="/' . $request['handle'] . '"><img class="circimg" src="' . ProfilePic::image((int) $request['uni_id'], "medium") . '" /></a>
 		<br /><a href="/' . $request['handle'] . '">' . $request['display_name'] . '</a>
 		<br /><a ' . ($request['role'] != '' ? 'class="role-' . $request['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $request['handle'] . '">@' . $request['handle'] . '</a>
+		<br /><br /><a href="/friends/requests?handle=' . $request['handle'] . '&' . Link::prepare("cancel-request-" . $request['handle']) . '">Cancel Request</a>
 	</div>';
 }
 

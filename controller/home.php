@@ -35,7 +35,7 @@ if(Me::$loggedIn)
 			$comment = Sanitize::text($_POST['social_reply_text'], "/~");
 			
 			// Make sure the comment is within an acceptable limit
-			$comment = substr($comment, 0, 255);
+			$comment = substr($comment, 0, 600);
 			
 			if(FormValidate::pass())
 			{
@@ -124,7 +124,7 @@ function positionReplyBox(user, postID)
 	}
 	
 	// Pull the comments for a specific post
-	getAjax("", "getComments", "commentReturn", "postID=" + postID, "user=" + user);
+	getAjax("", "get-comments", "commentReturn", "postID=" + postID, "user=" + user);
 }
 
 function commentReturn(response)
@@ -142,7 +142,7 @@ function commentReturn(response)
 	
 	if(obj.hasmore == 1)
 	{
-		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'getComments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
+		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'get-comments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
 	}
 
 	for(var comment in commentData)
@@ -200,7 +200,7 @@ echo '
 	<input id="social_reply_input" type="hidden" name="social_reply_input" value="0" />
 	<div style="float:left; width:90px; text-align:right;"><img class="circimg-small" src="' . ProfilePic::image(Me::$id) . '" /></div>
 	<div style="margin-left:100px;">
-		<textarea name="social_reply_text" placeholder="Enter your comment here..." maxlength="255" style="width:98%; height:48px;"></textarea>
+		<textarea name="social_reply_text" placeholder="Enter your comment here..." maxlength="600" style="width:98%; height:48px;"></textarea>
 		<div><input type="submit" name="submit" value="Post Reply" /></div>
 	</div>
 </form>

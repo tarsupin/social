@@ -10,7 +10,7 @@ if(Me::$loggedIn)
 	<div class="panel-box">
 		<ul class="panel-slots">
 			<li class="nav-slot' . (in_array($url[0], array("", "home")) ? " nav-active" : "") . '"><a href="/">Social Feed<span class="icon-circle-right nav-arrow"></span></a></li>
-			<li class="nav-slot' . ($url[0] == Me::$vals['handle'] ? " nav-active" : "") . '"><a href="/' . Me::$vals['handle'] . '">My Wall<span class="icon-circle-right nav-arrow"></span></a></li>
+			<li class="nav-slot' . ($url[0] == Me::$vals['handle'] && !isset($url[1]) ? " nav-active" : "") . '"><a href="/' . Me::$vals['handle'] . '">My Wall<span class="icon-circle-right nav-arrow"></span></a></li>
 			<li class="nav-slot' . ($url[0] == "post" ? " nav-active" : "") . '"><a href="/post">Advanced Post<span class="icon-circle-right nav-arrow"></span></a></li>
 			<li class="nav-slot' . ($url[0] == "settings" ? " nav-active" : "") . '"><a href="/settings">Settings<span class="icon-circle-right nav-arrow"></span></a></li>
 			<li class="nav-slot' . ($url[0] == "friends" and !$url ? " nav-active" : "") . '"><a href="/friends">Friends<span class="icon-circle-right nav-arrow"></span></a></li>
@@ -43,8 +43,8 @@ if(Me::$loggedIn)
 	<div class="menu-wrap hide-600">
 		<ul class="menu">
 			' . (isset($uniMenu) ? $uniMenu : '') . '
-			<li class="menu-slot' . ($url[0] == $handle ? " menu-active" : "") . '"><a href="/' . $handle . '">My Wall</a>
-			</li><li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
+			<li class="menu-slot' . ($url[0] == "" ? " menu-active" : "") . '"><a href="/">Feed</a>
+			</li><li class="menu-slot' . ($url[0] == $handle && !isset($url[1]) ? " menu-active" : "") . '"><a href="/' . $handle . '">My Wall</a>
 			</li><li class="menu-slot' . ($url[0] == "post" ? " menu-active" : "") . '"><a href="/post">Adv. Post</a>
 			</li><li class="menu-slot' . ($url[0] == "settings" ? " menu-active" : "") . '"><a href="/settings">Settings</a>
 			</li><li class="menu-slot' . ($url[0] == "friends" ? " menu-active" : "") . '"><a href="/friends">Friends</a><ul><li class="dropdown-slot"><a href="/friends/requests">Friend Requests</a></li><li class="dropdown-slot"><a href="/friends/followers">My Followers</a></li><li class="dropdown-slot"><a href="/friends/following">Who I\'m Following</a></li></ul></li>
@@ -68,7 +68,9 @@ if(isset($config['pageTitle']) and $config['pageTitle'] != "")
 }
 if(You::$id)
 {
-	$config['active-hashtag'] = You::$handle;
+	// don't display widgets on personal pages
+	if(!isset($url[1]) || $url[1] != "pages")
+		$config['active-hashtag'] = You::$handle;
 }
 
 // Base style sheet for this site

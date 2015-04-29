@@ -62,7 +62,7 @@ abstract class FriendWidget {
 		foreach($friendList as $friend)
 		{
 			$html .= '
-				<a href="/' . $friend['handle'] . '"><img src="' . ProfilePic::image((int) $friend['uni_id']) . '" /></a>';
+				<a href="/' . $friend['handle'] . '" title="' . $friend['handle'] . '"><img src="' . ProfilePic::image((int) $friend['uni_id']) . '" alt="' . $friend['handle'] . '" /></a>';
 		}
 		
 		$html .= '
