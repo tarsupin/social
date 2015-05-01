@@ -38,10 +38,10 @@ if(Me::$id == $userData['uni_id'])
 if(!isset($list[0])) $list[0] = array();
 foreach($list[0] as $l)
 {
-	$insert .= '<li class="menu-slot"><a href="/' . $userData['handle'] . '/pages/' . $l['page_id'] . '-' . $l['url_slug'] . '">' . $l['title'] . '</a>';
+	$insert .= '<li class="menu-slot"><a href="/' . $userData['handle'] . '/pages/' . $l['page_id'] . '-' . $l['url_slug'] . '">' . $l['title'] . (isset($list[(int) $l['page_id']]) ? ' <span class="icon-circle-right"></span>' : '') . '</a>';
 	if(isset($list[(int) $l['page_id']]))
 	{
-		$insert .= ' <span class="icon-circle-right"></span><ul>';
+		$insert .= '<ul>';
 		foreach($list[(int) $l['page_id']] as $s)
 			$insert .= '<li class="dropdown-slot"><a href="/' . $userData['handle'] . '/pages/' . $s['page_id'] . '-' . $s['url_slug'] . '">' . $s['title'] . '</a></li>';
 		$insert .= '</ul>';
@@ -87,9 +87,7 @@ if(isset($url[2]))
 			<div class="overwrap-name">' . $page['title'] . (Me::$id == $userData['uni_id'] ? ' &nbsp;<a href="/' . Me::$vals['handle'] . '/pages/' . $url[2] . '?delete&' . Link::prepare("page-delete") . '" title="Delete" onclick="return confirm(\'Are you sure you want to delete this page?\');"><span class="icon-trash"></span></a> &nbsp;<a href="/' . Me::$vals['handle'] . '/pages/move-page?id=' . $page['page_id'] . '" title="Move"><span class="icon-wand"></span></a> &nbsp; <a href="/' . Me::$vals['handle'] . '/pages/edit-page?id=' . $page['page_id'] . '" title="Edit"><span class="icon-pencil"></span></a>' : '') . '</div>
 		</div>
 		<div class="inner-box">
-			<div style="display:inline-block; text-align:center;">
 			' . html_entity_decode(nl2br(UniMarkup::parse($page['body']))) . '
-			</div>
 		</div>
 	</div>';
 	}

@@ -48,10 +48,10 @@ if(Me::$id == $userData['uni_id'])
 if(!isset($list[0])) $list[0] = array();
 foreach($list[0] as $l)
 {
-	$insert .= '<li class="menu-slot"><a href="/' . $userData['handle'] . '/pages/' . $l['page_id'] . '-' . $l['url_slug'] . '">' . $l['title'] . '</a>';
+	$insert .= '<li class="menu-slot"><a href="/' . $userData['handle'] . '/pages/' . $l['page_id'] . '-' . $l['url_slug'] . '">' . $l['title'] . (isset($list[(int) $l['page_id']]) ? ' <span class="icon-circle-right"></span>' : '') . '</a>';
 	if(isset($list[(int) $l['page_id']]))
 	{
-		$insert .= ' <span class="icon-circle-right"></span><ul>';
+		$insert .= '<ul>';
 		foreach($list[(int) $l['page_id']] as $s)
 			$insert .= '<li class="dropdown-slot"><a href="/' . $userData['handle'] . '/pages/' . $s['page_id'] . '-' . $s['url_slug'] . '">' . $s['title'] . '</a></li>';
 		$insert .= '</ul>';

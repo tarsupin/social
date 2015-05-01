@@ -283,6 +283,10 @@ abstract class AppPage {
 			{
 				return false;
 			}
+			if($parent['parent_id'] != 0)
+			{
+				return false;
+			}
 		}
 		
 		Database::startTransaction();
