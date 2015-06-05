@@ -132,7 +132,6 @@ function commentReturn(response)
 	if(!response) { return; }
 	
 	obj = JSON.parse(response);
-	console.log(obj);
 	commentData = obj.commentData;
 	page = obj.page;
 	
@@ -200,7 +199,7 @@ echo '
 	<input id="social_reply_input" type="hidden" name="social_reply_input" value="0" />
 	<div style="float:left; width:90px; text-align:right;"><img class="circimg-small" src="' . ProfilePic::image(Me::$id) . '" /></div>
 	<div style="margin-left:100px;">
-		<textarea name="social_reply_text" placeholder="Enter your comment here..." maxlength="600" style="width:98%; height:48px;"></textarea>
+		<textarea name="social_reply_text" placeholder="Enter your comment here..." rows="3" maxlength="600" style="width:98%;"></textarea>
 		<div><input type="submit" name="submit" value="Post Reply" /></div>
 	</div>
 </form>

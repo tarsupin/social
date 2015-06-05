@@ -60,7 +60,7 @@ abstract class AppComment {
 	,	$uniID					// <int> The Uni-Account of the user that is commenting.
 	,	$comment				// <str> The comment to post.
 	,	$link = ""				// <str> The link to this particular comment.
-	,	$toUniID = 0			// <int> The UniID of the target being commented to.
+	,	$toUniID = 0			// <int> The UniID of the wall being commented to.
 	,	$isPublic = true		// <bool> TRUE if this is a public post.
 	)							// RETURNS <int> ID of the new comment, 0 if failed.
 	
@@ -97,12 +97,13 @@ abstract class AppComment {
 			if($toUniID != $uniID && $toUniID > 0)
 			{
 				if($uniID != Me::$id)	{ $userData['handle'] = Me::$vals['handle']; }
-				else 					{ $userData = User::get($uniID, "handle");}
+				else 					{ $userData = User::get($uniID, "handle"); }
 				Notifications::create($toUniID, $link, "@" . $userData['handle'] . " has commented on a post on your wall.");
 				$postData = AppSocial::getPostDirect($postID);
 				if($postData['poster_id'] != $toUniID && $postData['poster_id'] != $uniID)
 				{
-					Notifications::create($postData['poster_id'], $link, "@" . $userData['handle'] . " has commented on your post on @" . $userData['handle'] . "'s wall.");
+					$userTargetData = User::get($toUniID, "handle");
+					Notifications::create((int) $postData['poster_id'], $link, "@" . $userData['handle'] . " has commented on your post on @" . $userTargetData['handle'] . "'s wall.");
 				}
 			}
 			

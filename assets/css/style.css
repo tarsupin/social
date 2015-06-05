@@ -138,6 +138,11 @@
 .comment-repost { color:gray; padding:2px 0px 2px 0px; }
 
 
+/**************************
+****** Post Elements ******
+**************************/
+
+.comment-message ul, .inner-box ul, #preview ul { list-style-type:disc;margin-left:1em; }
 
 /* Mobile Version */
 @media screen and (max-width:600px) {
@@ -145,6 +150,7 @@
 	.comment-left { display:none; }
 	.comment-right { margin-left:0px; }
 }
+
 
 /******************************
 ****** Responsive Design ******

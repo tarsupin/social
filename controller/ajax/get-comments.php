@@ -23,7 +23,15 @@ if(!$postData = AppSocial::getPostDirect($postID))
 }
 
 // Get the social data
-$social = new AppSocial((int) $postData['poster_id']);
+if(isset($_POST['owner']) && $_POST['owner'] > 0)
+{
+	$social = new AppSocial((int) $_POST['owner']);
+}
+else
+{
+	$_POST['owner'] = 0;
+	$social = new AppSocial((int) $postData['poster_id']);
+}
 
 // Make sure you have clearance to view the poster's comments (and this comment)
 if($social->canAccess)
@@ -65,5 +73,5 @@ if($social->canAccess)
 		}
 	}
 	
-	echo json_encode(array("postID" => $postID, "commentData" => $comments, "page" => $_POST['page'], "user" => $_POST['user'], "hasmore" => $hasmore)); exit;
+	echo json_encode(array("postID" => $postID, "commentData" => $comments, "page" => $_POST['page'], "user" => $_POST['user'], "owner" => (int) $_POST['owner'], "hasmore" => $hasmore)); exit;
 }

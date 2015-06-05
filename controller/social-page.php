@@ -274,7 +274,7 @@ function positionReplyBox(user, postID)
 	}
 	
 	// Pull the comments for a specific post
-	getAjax("", "get-comments", "commentReturn", "postID=" + postID, "user=" + user, "page=1");
+	getAjax("", "get-comments", "commentReturn", "postID=" + postID, "user=" + user, "owner=<?php echo You::$id; ?>", "page=1");
 }
 
 function commentReturn(response)
@@ -282,7 +282,6 @@ function commentReturn(response)
 	if(!response) { return; }
 	
 	obj = JSON.parse(response);
-	console.log(obj);
 	commentData = obj.commentData;
 	page = obj.page;
 	
@@ -292,7 +291,7 @@ function commentReturn(response)
 	
 	if(obj.hasmore == 1)
 	{
-		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'get-comments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
+		prepHTML += '<div class="thread-tline" style="margin:0px 22px 0px 44px;"><a href="javascript:getAjax(\'\', \'get-comments\', \'commentReturn\', \'postID=' + obj.postID + '\', \'user=' + obj.user + '\', \'owner=' + obj.owner + '\', \'page=' + (page+1) + '\');">View Older Comments</a></div>';
 	}
 
 	for(var comment in commentData)
