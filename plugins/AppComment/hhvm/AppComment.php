@@ -90,7 +90,7 @@ abstract class AppComment {
 			if($isPublic)
 			{
 				// Process the Comment (Hashtag, Credits, Notifications, etc)
-				Comment::process($uniID, $comment, $link, $toUniID);
+				//Comment::process($uniID, $comment, $link, $toUniID);
 			}
 			
 			// If it's not your wall, get the post data to prepare a notification

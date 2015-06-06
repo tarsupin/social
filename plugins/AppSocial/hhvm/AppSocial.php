@@ -215,7 +215,7 @@ class AppSocial {
 			// Process the Comment (Hashtag, Credits, Notifications, etc) for public posts
 			if($clearance == 0)
 			{
-				Comment::process($posterID, $message, $link, $socialID, $hashData);
+				//Comment::process($posterID, $message, $link, $socialID, $hashData);
 			}
 			
 			if($posterID != Me::$id)	{ $userData['handle'] = Me::$vals['handle']; }
